@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Constants/constants.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Buttons/primary_progress_button.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Navigation/app_header.dart';
@@ -13,6 +14,7 @@ class ProfileNotificationSettings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final _assignmedToMe = ValueNotifier(true);
     final _taskCompleted = ValueNotifier(false);
     final _mentionedMe = ValueNotifier(true);
@@ -20,7 +22,7 @@ class ProfileNotificationSettings extends StatelessWidget {
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: context.palette.surface,
         position: "topLeft",
       ),
       Padding(
@@ -29,13 +31,13 @@ class ProfileNotificationSettings extends StatelessWidget {
               child: SingleChildScrollView(
                   child: Column(children: [
             TaskezAppHeader(
-              title: "$tabSpace Notifications",
+              title: "$tabSpace ${l.notifSettingsTitle}",
               widget: PrimaryProgressButton(
                 width: 80,
                 height: 40,
-                label: "Done",
+                label: l.commonDone,
                 textStyle: GoogleFonts.lato(
-                    color: Colors.white, fontWeight: FontWeight.bold),
+                    color: context.palette.textPrimary, fontWeight: FontWeight.bold),
               ),
             ),
             AppSpaces.verticalSpace40,
@@ -44,42 +46,42 @@ class ProfileNotificationSettings extends StatelessWidget {
                 height: Utils.screenHeight * 0.9,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: AppColors.primaryBackgroundColor),
+                    color: context.palette.background),
                 child: Column(children: [
                   LabelledOption(
-                    label: '30 minutes',
+                    label: l.notifSettings30min,
                     icon: Icons.lock_clock,
                   ),
                   LabelledOption(
-                    label: '1 hour',
+                    label: l.notifSettings1hour,
                     icon: Icons.lock_clock,
                   ),
                   LabelledOption(
-                    label: 'Until Tomorrow',
+                    label: l.notifSettingsUntilTomorrow,
                     icon: Icons.calendar_today,
                   ),
                   LabelledOption(
-                    label: 'Until next 2 days',
+                    label: l.notifSettingsUntilNext2Days,
                     icon: Icons.calendar_today,
                   ),
                   LabelledOption(
-                    label: 'Custom',
+                    label: l.notifSettingsCustom,
                     icon: Icons.calendar_today,
                   ),
                 ])),
             AppSpaces.verticalSpace40,
-            ContainerLabel(label: "NOTIFY MY ABOUT"),
+            ContainerLabel(label: l.notifSettingsNotifyMeAbout),
             AppSpaces.verticalSpace40,
             LabelledCheckbox(
-              label: "Task assigned to me",
+              label: l.notifSettingsTaskAssigned,
               notifierValue: _assignmedToMe,
             ),
             LabelledCheckbox(
-                label: "Task completed", notifierValue: _taskCompleted),
+                label: l.notifSettingsTaskCompleted, notifierValue: _taskCompleted),
             LabelledCheckbox(
-                label: "Mentioned Me", notifierValue: _mentionedMe),
+                label: l.notifSettingsMentionedMe, notifierValue: _mentionedMe),
             LabelledCheckbox(
-                label: "Direct Message", notifierValue: _directMessage),
+                label: l.notifSettingsDirectMessage, notifierValue: _directMessage),
           ]))))
     ]));
   }
@@ -98,7 +100,7 @@ class LabelledCheckbox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Text(label, style: GoogleFonts.lato(color: Colors.white, fontSize: 17)),
+      Text(label, style: GoogleFonts.lato(color: context.palette.textPrimary, fontSize: 17)),
       Theme(
         data: Theme.of(context).copyWith(
           unselectedWidgetColor: Colors.grey,
@@ -108,7 +110,7 @@ class LabelledCheckbox extends StatelessWidget {
             builder: (BuildContext context, _, __) {
               return Checkbox(
                   value: notifierValue!.value,
-                  activeColor: AppColors.primaryAccentColor,
+                  activeColor: context.palette.accent,
                   onChanged: (bool? value) => notifierValue!.value = value!);
             }),
       ),

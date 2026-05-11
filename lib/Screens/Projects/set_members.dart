@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskez/Data/data_model.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Buttons/primary_buttons.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Forms/search_box.dart';
@@ -12,6 +13,7 @@ class SelectMembersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final _searchController = new TextEditingController();
     final dynamic data = AppData.employeeData;
     List<Widget> cards = List.generate(
@@ -26,7 +28,7 @@ class SelectMembersScreen extends StatelessWidget {
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: context.palette.surface,
         position: "topLeft",
       ),
       Padding(
@@ -35,11 +37,11 @@ class SelectMembersScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(right: 20, left: 20),
               child: TaskezAppHeader(
-                title: "Set Assignees",
+                title: l.setAssigneesTitle,
                 widget: AppPrimaryButton(
                   buttonHeight: 40,
                   buttonWidth: 70,
-                  buttonText: "Next",
+                  buttonText: l.commonNext,
                 ),
               ),
             ),
@@ -49,11 +51,11 @@ class SelectMembersScreen extends StatelessWidget {
                 child: Container(
                     width: double.infinity,
                     height: double.infinity,
-                    decoration: BoxDecorationStyles.fadingGlory,
+                    decoration: BoxDecorationStyles.fadingGlory(context),
                     child: Padding(
                         padding: const EdgeInsets.all(3.0),
                         child: DecoratedBox(
-                            decoration: BoxDecorationStyles.fadingInnerDecor,
+                            decoration: BoxDecorationStyles.fadingInnerDecor(context),
                             child: Padding(
                                 padding: const EdgeInsets.all(20.0),
                                 child: Column(
@@ -61,7 +63,7 @@ class SelectMembersScreen extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       SearchBox(
-                                        placeholder: 'Search',
+                                        placeholder: l.commonSearch,
                                         controller: _searchController,
                                       ),
                                       AppSpaces.verticalSpace20,
@@ -76,7 +78,7 @@ class SelectMembersScreen extends StatelessWidget {
             AppPrimaryButton(
                 buttonHeight: 50,
                 buttonWidth: 150,
-                buttonText: "Add Member",
+                buttonText: l.setMembersAddMember,
                 callback: () {
                   int count = 0;
                   Navigator.of(context).popUntil((_) => count++ >= 2);

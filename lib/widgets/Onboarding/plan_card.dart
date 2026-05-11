@@ -48,7 +48,7 @@ class PlanCard extends StatelessWidget {
                             padding: const EdgeInsets.all(4.0),
                             child: DecoratedBox(
                                 decoration:
-                                    BoxDecorationStyles.fadingInnerDecor,
+                                    BoxDecorationStyles.fadingInnerDecor(context),
                                 child: Center(
                                     child: Column(
                                         crossAxisAlignment:
@@ -59,7 +59,7 @@ class PlanCard extends StatelessWidget {
                                       SizedBox(height: 40),
                                       Text(header,
                                           style: GoogleFonts.lato(
-                                              color: Colors.white,
+                                              color: context.palette.textPrimary,
                                               fontWeight: FontWeight.bold,
                                               fontSize: 24)),
                                       AppSpaces.verticalSpace10,
@@ -78,7 +78,7 @@ class PlanCard extends StatelessWidget {
                                   height: 50,
                                   decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: HexColor.fromHex("181a1f")),
+                                      color: context.palette.surface),
                                   child: GreenDoneIcon()),
                             ),
                             Center(
@@ -92,7 +92,7 @@ class PlanCard extends StatelessWidget {
                                   AppSpaces.verticalSpace20,
                                   Text(header,
                                       style: GoogleFonts.lato(
-                                          color: Colors.black,
+                                          color: context.palette.textPrimary,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 24)),
                                   AppSpaces.verticalSpace10,

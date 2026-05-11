@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/widgets/Shapes/background_hexagon.dart';
 import 'dart:math' as math;
+import 'package:taskez/Theme/app_palette.dart';
 
 class SliderCaptionedImage extends StatelessWidget {
   final int index;
@@ -30,7 +31,7 @@ class SliderCaptionedImage extends StatelessWidget {
               style: GoogleFonts.raleway(
                   fontWeight: FontWeight.bold,
                   fontSize: 50,
-                  color: Colors.white))),
+                  color: context.palette.textPrimary))),
       index == 0
           ? Positioned(
               bottom: 70,
@@ -39,7 +40,7 @@ class SliderCaptionedImage extends StatelessWidget {
                 scale: 0.3,
                 child: Transform.rotate(
                     angle: -math.pi / 2,
-                    child: CustomPaint(painter: BackgroundHexagon())),
+                    child: CustomPaint(painter: BackgroundHexagon(color: context.palette.background))),
               ))
           : SizedBox()
     ]);

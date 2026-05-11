@@ -21,9 +21,9 @@ class TaskezAppHeader extends StatelessWidget {
                   height: 10,
                   decoration: BoxDecoration(shape: BoxShape.circle, color: HexColor.fromHex("94D57B"))),
               SizedBox(width: 5),
-              Text(this.title, style: GoogleFonts.lato(fontSize: 20, color: Colors.white))
+              Text(this.title, style: GoogleFonts.lato(fontSize: 20, color: context.palette.textPrimary))
             ])
-          : Text(this.title, style: GoogleFonts.lato(fontSize: 20, color: Colors.white)),
+          : Text(this.title, style: GoogleFonts.lato(fontSize: 20, color: context.palette.textPrimary)),
       widget!
     ]);
   }

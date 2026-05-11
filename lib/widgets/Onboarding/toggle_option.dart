@@ -32,25 +32,25 @@ class ToggleLabelOption extends StatelessWidget {
                     child: ListTile(
                         title: Row(
                           children: [
-                            Icon(icon, color: Colors.white, size: 24),
+                            Icon(icon, color: context.palette.textPrimary, size: 24),
                             Text(label,
                                 style: GoogleFonts.lato(
-                                    fontSize: 18, color: Colors.white)),
+                                    fontSize: 18, color: context.palette.textPrimary)),
                           ],
                         ),
                         trailing: notifierValue == null
                             ? SizedBox()
                             : CupertinoSwitch(
                                 value: notifierValue!.value,
-                                activeColor: AppColors.primaryAccentColor,
+                                activeColor: context.palette.accent,
                                 onChanged: (bool value) {
                                   notifierValue!.value = value;
                                 },
                               ))),
               );
             }),
-        Divider(height: 1, color: HexColor.fromHex("353742"))
-        // Divider(height: 1, color: HexColor.fromHex("616575"))
+        Divider(height: 1, color: context.palette.divider)
+        // Divider(height: 1, color: context.palette.textMuted)
       ],
     );
   }

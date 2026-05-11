@@ -11,6 +11,6 @@ class BottomSheetHolder extends StatelessWidget {
         height: 5,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5.0),
-            color: HexColor.fromHex("5E6272")));
+            color: context.palette.textMuted));
   }
 }

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:taskez/Constants/constants.dart';
 import 'package:taskez/Data/data_model.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Navigation/app_header.dart';
 import 'package:taskez/widgets/Projects/project_card_vertical.dart';
@@ -19,7 +20,7 @@ class MyTeams extends StatelessWidget {
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: context.palette.surface,
         position: "topLeft",
       ),
       Padding(
@@ -28,9 +29,9 @@ class MyTeams extends StatelessWidget {
               child: SingleChildScrollView(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             TaskezAppHeader(
-                title: "$tabSpace $tabSpace Team",
+                title: "$tabSpace $tabSpace ${AppLocalizations.of(context).teamHeader}",
                 widget: Row(children: [
-                  Icon(Icons.more_horiz, size: 30, color: Colors.white),
+                  Icon(Icons.more_horiz, size: 30, color: context.palette.textPrimary),
                   AppSpaces.horizontalSpace20,
                   AddSubIcon()
                 ])),
@@ -128,9 +129,9 @@ class TeamStory extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(teamTitle, style: AppTextStyles.header2.copyWith(fontSize: 35)),
+        Text(teamTitle, style: AppTextStyles.header2(context).copyWith(fontSize: 35)),
         AppSpaces.verticalSpace10,
-        ContainerLabel(label: "$numberOfMembers Members"),
+        ContainerLabel(label: AppLocalizations.of(context).teamMembersCount(numberOfMembers)),
         AppSpaces.verticalSpace10,
         InkWell(
           onTap: () {
@@ -139,7 +140,7 @@ class TeamStory extends StatelessWidget {
           child: Transform.scale(
               alignment: Alignment.centerLeft,
               scale: 0.7,
-              child: buildStackedImages(numberOfMembers: noImages, addMore: true)),
+              child: buildStackedImages(context: context, numberOfMembers: noImages, addMore: true)),
         ),
       ],
     );

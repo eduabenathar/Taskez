@@ -44,7 +44,7 @@ class ActiveTaskCard extends StatelessWidget {
             height: 100,
             padding: EdgeInsets.all(20.0),
             decoration: BoxDecoration(
-                color: AppColors.primaryBackgroundColor,
+                color: context.palette.background,
                 borderRadius: BorderRadius.circular(10)),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -74,14 +74,14 @@ class ActiveTaskCard extends StatelessWidget {
                                       width: 25,
                                       height: 25,
                                       decoration: BoxDecoration(
-                                          color: Colors.black,
+                                          color: context.palette.textPrimary,
                                           shape: BoxShape.circle),
                                       child: Center(
                                           child: Container(
                                               width: 12,
                                               height: 12,
                                               decoration: BoxDecoration(
-                                                  color: Colors.white,
+                                                  color: context.palette.textPrimary,
                                                   shape: BoxShape.circle)))))),
                         ),
                       ),
@@ -93,7 +93,7 @@ class ActiveTaskCard extends StatelessWidget {
                         children: [
                           Text(header,
                               style: GoogleFonts.lato(
-                                  color: Colors.white,
+                                  color: context.palette.textPrimary,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 18)),
                           Text(subHeader,

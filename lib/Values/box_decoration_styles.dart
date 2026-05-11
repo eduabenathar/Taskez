@@ -1,22 +1,25 @@
 part of values;
 
 class BoxDecorationStyles {
-  static final BoxDecoration fadingGlory = BoxDecoration(
-    gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          HexColor.fromHex("625B8B"),
-          Color.fromRGBO(98, 99, 102, 1),
-          HexColor.fromHex("#181a1f"),
-          HexColor.fromHex("#181a1f")
-        ]),
-    borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-    //border: Border.all(color: Colors.red, width: 5)
-  );
+  static BoxDecoration fadingGlory(BuildContext context) {
+    final palette = context.palette;
+    return BoxDecoration(
+      gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            palette.surfaceElevated,
+            palette.surface,
+            palette.background,
+            palette.background,
+          ]),
+      borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+    );
+  }
 
-  static final BoxDecoration fadingInnerDecor = BoxDecoration(
-      color: HexColor.fromHex("181A1F"),
-      borderRadius: BorderRadius.circular(20));
+  static BoxDecoration fadingInnerDecor(BuildContext context) =>
+      BoxDecoration(
+          color: context.palette.surface,
+          borderRadius: BorderRadius.circular(20));
 }

@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 
 class DailyGoalCard extends StatelessWidget {
   const DailyGoalCard({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
         width: double.infinity,
         padding: EdgeInsets.all(20.0),
         height: 220,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(20.0)),
-            color: AppColors.primaryBackgroundColor),
+            color: context.palette.background),
         child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -22,9 +24,9 @@ class DailyGoalCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Daily Goal',
+                  Text(l.dailyGoalTitle,
                       style: GoogleFonts.lato(
-                          color: HexColor.fromHex("616575"),
+                          color: context.palette.textMuted,
                           fontSize: 17,
                           fontWeight: FontWeight.w500)),
                   AppSpaces.verticalSpace10,
@@ -41,22 +43,22 @@ class DailyGoalCard extends StatelessWidget {
                           child: Center(
                             child: Text('3/5',
                                 style: GoogleFonts.lato(
-                                  color: Colors.white,
+                                  color: context.palette.textPrimary,
                                   fontSize: 16,
                                 )),
                           )),
                       AppSpaces.horizontalSpace10,
-                      Text('Tasks',
+                      Text(l.dailyGoalTasks,
                           style: GoogleFonts.lato(
-                              color: Colors.white,
+                              color: context.palette.textPrimary,
                               fontSize: 17,
                               fontWeight: FontWeight.w500)),
                     ],
                   ),
                   AppSpaces.verticalSpace10,
-                  Text('You marked 3/5 tasks\nare done 🎉',
+                  Text(l.dailyGoalProgress,
                       style: GoogleFonts.lato(
-                          color: HexColor.fromHex("616575"),
+                          color: context.palette.textMuted,
                           fontSize: 17,
                           fontWeight: FontWeight.w500)),
                   AppSpaces.verticalSpace20,
@@ -74,11 +76,11 @@ class DailyGoalCard extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(50.0),
                                     side: BorderSide(
                                         color: HexColor.fromHex("C25FFF"))))),
-                        child: Text('All Task',
+                        child: Text(l.dailyGoalAllTask,
                             style: GoogleFonts.lato(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white))),
+                                color: context.palette.textPrimary))),
                   )
                 ],
               ),
@@ -90,7 +92,7 @@ class DailyGoalCard extends StatelessWidget {
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                              width: 8, color: HexColor.fromHex("434552"))),
+                              width: 8, color: context.palette.surfaceElevated)),
                       child: Center(
                         child: Container(
                           width: 50,

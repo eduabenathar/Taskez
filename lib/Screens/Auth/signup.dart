@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Forms/form_input_with%20_label.dart';
 import 'package:taskez/widgets/Navigation/back.dart';
@@ -22,10 +23,11 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: context.palette.surface,
         position: "topLeft",
       ),
       Padding(
@@ -34,32 +36,32 @@ class _SignUpState extends State<SignUp> {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             NavigationBack(),
             SizedBox(height: 40),
-            Text('Sign Up', style: GoogleFonts.lato(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold)),
+            Text(l.signupTitle, style: GoogleFonts.lato(color: context.palette.textPrimary, fontSize: 40, fontWeight: FontWeight.bold)),
             AppSpaces.verticalSpace20,
             RichText(
               text: TextSpan(
-                text: 'Using  ',
-                style: GoogleFonts.lato(color: HexColor.fromHex("676979")),
+                text: l.loginUsingPrefix,
+                style: GoogleFonts.lato(color: context.palette.textMuted),
                 children: <TextSpan>[
-                  TextSpan(text: widget.email, style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
-                  TextSpan(text: "  to login.", style: GoogleFonts.lato(color: HexColor.fromHex("676979"))),
+                  TextSpan(text: widget.email, style: TextStyle(color: context.palette.textSecondary, fontWeight: FontWeight.bold)),
+                  TextSpan(text: l.loginUsingSuffix, style: GoogleFonts.lato(color: context.palette.textMuted)),
                 ],
               ),
             ),
             SizedBox(height: 30),
             LabelledFormInput(
-                placeholder: "Name",
+                placeholder: l.authNamePlaceholder,
                 keyboardType: "text",
                 controller: _nameController,
                 obscureText: obscureText,
-                label: "Your Name"),
+                label: l.authNameLabel),
             SizedBox(height: 15),
             LabelledFormInput(
-                placeholder: "Password",
+                placeholder: l.authPasswordPlaceholder,
                 keyboardType: "text",
                 controller: _passController,
                 obscureText: obscureText,
-                label: "Your Password"),
+                label: l.authPasswordLabel),
             SizedBox(height: 40),
             Container(
               width: double.infinity,
@@ -68,8 +70,8 @@ class _SignUpState extends State<SignUp> {
                   onPressed: () {
                     Get.to(() => Login(email: widget.email));
                   },
-                  style: ButtonStyles.blueRounded,
-                  child: Text('Sign Up', style: GoogleFonts.lato(fontSize: 20, color: Colors.white))),
+                  style: ButtonStyles.blueRounded(context),
+                  child: Text(l.signupButton, style: GoogleFonts.lato(fontSize: 20, color: context.palette.textInverse))),
             )
           ])))
     ]));

@@ -16,7 +16,7 @@ class ContainerLabel extends StatelessWidget {
         child: Text(label,
             style: GoogleFonts.lato(
                 fontSize: 12,
-                color: HexColor.fromHex("666A7A"),
+                color: context.palette.textMuted,
                 fontWeight: FontWeight.bold)));
   }
 }

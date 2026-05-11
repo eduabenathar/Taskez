@@ -22,7 +22,7 @@ class ActiveProjectSelectableContainer extends StatelessWidget {
           height: 70,
           padding: EdgeInsets.all(20.0),
           decoration: BoxDecoration(
-              border: Border.all(color: AppColors.primaryBackgroundColor, width: 4),
+              border: Border.all(color: context.palette.background, width: 4),
               borderRadius: BorderRadius.circular(10)),
           child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Row(children: [
@@ -33,10 +33,10 @@ class ActiveProjectSelectableContainer extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: HexColor.fromHex("80BF6B"),
                   ),
-                  child: Center(child: Icon(Icons.done, size: 10, color: Colors.white))),
+                  child: Center(child: Icon(Icons.done, size: 10, color: context.palette.textPrimary))),
               AppSpaces.horizontalSpace20,
               Text("$header🎉",
-                  style: GoogleFonts.lato(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18)),
+                  style: GoogleFonts.lato(color: context.palette.textPrimary, fontWeight: FontWeight.w600, fontSize: 18)),
             ]),
             SizedBox()
           ])),

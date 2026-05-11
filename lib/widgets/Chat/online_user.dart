@@ -27,7 +27,7 @@ class OnlineUser extends StatelessWidget {
             imageBackground: imageBackground,
           ),
           AppSpaces.horizontalSpace20,
-          Text(userName, style: GoogleFonts.lato(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18))
+          Text(userName, style: GoogleFonts.lato(color: context.palette.textPrimary, fontWeight: FontWeight.w600, fontSize: 18))
         ]),
       ),
     );

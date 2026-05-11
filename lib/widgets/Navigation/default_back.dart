@@ -19,7 +19,7 @@ class DefaultNav extends StatelessWidget {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
       AppBackButton(),
       Text(this.title,
-          style: GoogleFonts.lato(fontSize: 20, color: Colors.white)),
+          style: GoogleFonts.lato(fontSize: 20, color: context.palette.textPrimary)),
       Builder(builder: (context) {
         if (type == ProfileDummyType.Icon) {
           return ProfileDummy(

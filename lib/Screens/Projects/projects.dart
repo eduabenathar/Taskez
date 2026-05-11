@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Chat/add_chat_icon.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Navigation/app_header.dart';
@@ -12,7 +13,7 @@ class Projects extends StatelessWidget {
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: context.palette.surface,
         position: "topLeft",
       ),
       Padding(
@@ -20,7 +21,7 @@ class Projects extends StatelessWidget {
           child: SafeArea(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               TaskezAppHeader(
-                title: "Chat",
+                title: AppLocalizations.of(context).projectsTitle,
                 widget: AppAddIcon(),
               ),
               AppSpaces.verticalSpace20,

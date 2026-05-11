@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Buttons/primary_progress_button.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Navigation/app_header.dart';
@@ -11,10 +12,11 @@ class TaskDueDate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: context.palette.surface,
         position: "topLeft",
       ),
       Padding(
@@ -22,7 +24,7 @@ class TaskDueDate extends StatelessWidget {
           child: Column(children: [
             Padding(
               padding: const EdgeInsets.only(right: 20, left: 20),
-              child: TaskezAppHeader(title: "Due Date", widget: SizedBox()),
+              child: TaskezAppHeader(title: l.taskDueDate, widget: SizedBox()),
             ),
             SizedBox(height: 40),
             Expanded(
@@ -30,11 +32,11 @@ class TaskDueDate extends StatelessWidget {
                 child: Container(
                     width: double.infinity,
                     height: double.infinity,
-                    decoration: BoxDecorationStyles.fadingGlory,
+                    decoration: BoxDecorationStyles.fadingGlory(context),
                     child: Padding(
                         padding: const EdgeInsets.all(3.0),
                         child: DecoratedBox(
-                            decoration: BoxDecorationStyles.fadingInnerDecor,
+                            decoration: BoxDecorationStyles.fadingInnerDecor(context),
                             child: Padding(
                                 padding: const EdgeInsets.all(20.0),
                                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -44,19 +46,19 @@ class TaskDueDate extends StatelessWidget {
                                       width: double.infinity,
                                       height: 120,
                                       decoration: BoxDecoration(
-                                          color: AppColors.primaryBackgroundColor,
+                                          color: context.palette.background,
                                           borderRadius: BorderRadius.circular(20)),
                                       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                                         ConditionText(
-                                            label: "Due Time", color: HexColor.fromHex("BE5EF6"), value: "12:30 PM"),
+                                            label: l.taskDueTime, color: HexColor.fromHex("BE5EF6"), value: "12:30 PM"),
                                         AppSpaces.horizontalSpace20,
                                         AppSpaces.horizontalSpace20,
                                         Container(
-                                            width: 0.3, color: HexColor.fromHex("686C7D"), height: double.infinity),
+                                            width: 0.3, color: context.palette.textMuted, height: double.infinity),
                                         AppSpaces.horizontalSpace20,
                                         AppSpaces.horizontalSpace20,
                                         ConditionText(
-                                            label: "Repeat", color: HexColor.fromHex("93EEEE"), value: "Never"),
+                                            label: l.commonRepeat, color: HexColor.fromHex("93EEEE"), value: l.commonNever),
                                       ])),
                                 ])))))),
           ])),
@@ -66,10 +68,10 @@ class TaskDueDate extends StatelessWidget {
             padding: EdgeInsets.only(left: 40, right: 20),
             width: Utils.screenWidth,
             child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text('Cancel',
+              Text(l.commonCancel,
                   style:
                       GoogleFonts.lato(color: HexColor.fromHex("F49189"), fontSize: 18, fontWeight: FontWeight.bold)),
-              PrimaryProgressButton(label: "Done")
+              PrimaryProgressButton(label: l.commonDone)
             ]),
           ))
     ]));
@@ -95,7 +97,7 @@ class ConditionText extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(label, style: GoogleFonts.lato(fontSize: 16, color: HexColor.fromHex("686C7D"))),
+          Text(label, style: GoogleFonts.lato(fontSize: 16, color: context.palette.textMuted)),
           AppSpaces.verticalSpace10,
           Text(value, style: GoogleFonts.lato(color: color, fontSize: 20, fontWeight: FontWeight.bold))
         ],

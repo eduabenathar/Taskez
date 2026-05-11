@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskez/Data/data_model.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Navigation/default_back.dart';
 import 'package:taskez/widgets/Notification/notification_card.dart';
 import 'package:taskez/widgets/dummy/profile_dummy.dart';
@@ -29,9 +30,9 @@ class NotificationScreen extends StatelessWidget {
         padding: EdgeInsets.only(left: 20.0, right: 20.0),
         child: SafeArea(
           child: Column(children: [
-            DefaultNav(title: "Notification", type: ProfileDummyType.Image),
+            DefaultNav(title: AppLocalizations.of(context).notificationsTitle, type: ProfileDummyType.Image),
             AppSpaces.verticalSpace20,
-            Expanded(child: ListView(children: [...notificationCards]))
+            Expanded(child: ListView(padding: const EdgeInsets.only(bottom: 96), children: [...notificationCards]))
           ]),
         ));
   }

@@ -30,8 +30,8 @@ class InactiveEmployeeCard extends StatelessWidget {
         height: 80,
         padding: EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-            color: AppColors.primaryBackgroundColor,
-            // border: Border.all(color: AppColors.primaryBackgroundColor, width: 4),
+            color: context.palette.background,
+            // border: Border.all(color: context.palette.background, width: 4),
             borderRadius: BorderRadius.circular(16)),
         child: Row(children: [
           ProfileDummy(
@@ -47,7 +47,7 @@ class InactiveEmployeeCard extends StatelessWidget {
               children: [
                 Text(employeeName,
                     style: GoogleFonts.lato(
-                        color: Colors.white,
+                        color: context.palette.textPrimary,
                         fontWeight: FontWeight.w600,
                         fontSize: 14.4)),
                 Text(employeePosition,

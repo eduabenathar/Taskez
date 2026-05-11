@@ -25,8 +25,8 @@ class AddSubIcon extends StatelessWidget {
               shape: BoxShape.circle,
               color: color ?? Colors.transparent,
               border: Border.all(
-                  width: 2, color: color ?? HexColor.fromHex("616575"))),
-          child: Icon(Icons.add, color: Colors.white)),
+                  width: 2, color: color ?? context.palette.textMuted)),
+          child: Icon(Icons.add, color: context.palette.textPrimary)),
     );
   }
 }

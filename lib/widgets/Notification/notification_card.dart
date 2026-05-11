@@ -80,7 +80,7 @@ class NotificationCard extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(userName,
-                                style: GoogleFonts.lato(color: Colors.white)),
+                                style: GoogleFonts.lato(color: context.palette.textPrimary)),
                             Text(date,
                                 style: GoogleFonts.lato(
                                     color: read

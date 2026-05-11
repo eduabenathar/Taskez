@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/BottomSheets/bottom_sheet_holder.dart';
 import 'package:taskez/widgets/Forms/form_input_with%20_label.dart';
 
@@ -10,6 +11,7 @@ class MoreTeamDetailsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final _workSpaceNameController = new TextEditingController();
     final _teamNameController = new TextEditingController();
     return Column(children: [
@@ -27,21 +29,21 @@ class MoreTeamDetailsSheet extends StatelessWidget {
                 value: "Blake Gordon",
                 controller: _workSpaceNameController,
                 obscureText: false,
-                label: "WorkSpace"),
+                label: l.moreTeamWorkSpace),
             AppSpaces.verticalSpace20,
             LabelledFormInput(
                 placeholder: "Marketing",
                 keyboardType: "text",
                 controller: _teamNameController,
                 obscureText: true,
-                label: "TEAM NAME"),
+                label: l.meetingDetailsTeamName),
             AppSpaces.verticalSpace20,
-            ContainerLabel(label: "Members"),
+            ContainerLabel(label: l.moreTeamMembers),
             AppSpaces.verticalSpace10,
             Transform.scale(
                 alignment: Alignment.centerLeft,
                 scale: 0.7,
-                child: buildStackedImages(numberOfMembers: "8", addMore: true)),
+                child: buildStackedImages(context: context, numberOfMembers: "8", addMore: true)),
           ],
         ),
       ),

@@ -24,6 +24,7 @@ class LabelledFormInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,61 +32,47 @@ class LabelledFormInput extends StatelessWidget {
         AppSpaces.verticalSpace10,
         Text(label.toUpperCase(),
             textAlign: TextAlign.left,
-            style: GoogleFonts.lato(
-                fontSize: 12,
-                //fontWeight: FontWeight.bold,
-                color: HexColor.fromHex("3C3E49"))),
+            style: GoogleFonts.lato(fontSize: 12, color: palette.textMuted)),
         TextFormField(
           controller: controller,
-
           style: GoogleFonts.lato(
-              fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+              fontWeight: FontWeight.bold, fontSize: 18, color: palette.textPrimary),
           onTap: () {},
           keyboardType: keyboardType == "text"
               ? TextInputType.text
               : TextInputType.number,
-          //initialValue: initialValue,
           obscureText:
               placeholder == 'Password' || placeholder == 'Choose a password'
                   ? true
                   : false,
-
           decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 0,
-                vertical: 20,
-              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
               suffixIcon: placeholder == "Password"
                   ? InkWell(
                       onTap: () {},
                       child: Icon(
-                        obscureText
-                            ? FontAwesomeIcons.eye
-                            : FontAwesomeIcons.eyeSlash,
-                        //size: 15.0,
-                        color: HexColor.fromHex("3C3E49"),
+                        obscureText ? FontAwesomeIcons.eye : FontAwesomeIcons.eyeSlash,
+                        color: palette.iconMuted,
                       ))
                   : InkWell(
-                      onTap: () {
-                        controller.text = "";
-                      },
+                      onTap: () { controller.text = ""; },
                       child: Icon(FontAwesomeIcons.solidTimesCircle,
-                          size: 20, color: HexColor.fromHex("3C3E49")),
+                          size: 20, color: palette.iconMuted),
                     ),
               hintText: placeholder,
               hintStyle: GoogleFonts.lato(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
-                  color: HexColor.fromHex("3C3E49")),
+                  color: palette.textMuted),
               filled: false,
               enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: HexColor.fromHex("3C3E49")),
+                borderSide: BorderSide(color: palette.divider),
               ),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: HexColor.fromHex("BEF0B2")),
               ),
               border: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green))),
+                  borderSide: BorderSide(color: palette.accent))),
         ),
       ],
     );

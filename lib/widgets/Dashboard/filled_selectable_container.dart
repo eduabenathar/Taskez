@@ -15,7 +15,7 @@ class FilledSelectableContainer extends StatelessWidget {
         height: 120,
         alignment: Alignment.centerLeft,
         decoration: BoxDecoration(
-            color: HexColor.fromHex("181A1F"),
+            color: context.palette.surface,
             borderRadius: BorderRadius.circular(10)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -30,7 +30,7 @@ class FilledSelectableContainer extends StatelessWidget {
                   TextSpan(
                       text: 'are invited',
                       style: GoogleFonts.lato(
-                        color: Colors.white,
+                        color: context.palette.textPrimary,
                         fontSize: 12,
                       )),
                 ],
@@ -39,18 +39,18 @@ class FilledSelectableContainer extends StatelessWidget {
             Row(
                 //mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(Icons.edit, color: Colors.white, size: 20),
+                  Icon(Icons.edit, color: context.palette.textPrimary, size: 20),
                   //AppSpaces.horizontalSpace10,
                   IconButton(
                       onPressed: null,
-                      icon: Icon(Icons.add, color: Colors.white, size: 25))
+                      icon: Icon(Icons.add, color: context.palette.textPrimary, size: 25))
                 ])
           ]),
           Transform.scale(
               alignment: Alignment.topLeft,
               origin: Offset.zero,
               scale: 0.7,
-              child: buildStackedImages(numberOfMembers: "2"))
+              child: buildStackedImages(context: context, numberOfMembers: "2"))
         ]));
   }
 }

@@ -18,69 +18,83 @@ class Timeline extends StatefulWidget {
 
 class _TimelineState extends State<Timeline> {
   ValueNotifier<int> bottomNavigatorTrigger = ValueNotifier(0);
-
-  StatelessWidget currentScreen = Dashboard();
-
   final PageStorageBucket bucket = PageStorageBucket();
+
+  static const double _pillHeight = 68;
+  static const double _pillBottom = -16;
+  static const double _pillSide = 24;
+
   @override
   Widget build(BuildContext context) {
+    final systemBottom = MediaQuery.of(context).padding.bottom;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final pillColor =
+        isLight ? const Color(0xFF5B5BF0) : const Color(0xFF2E3240);
+
     return Scaffold(
-        backgroundColor: HexColor.fromHex("#181a1f"),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        backgroundColor: context.palette.surface,
         body: Stack(children: [
           DarkRadialBackground(
-            color: HexColor.fromHex("#181a1f"),
+            color: context.palette.surface,
             position: "topLeft",
           ),
+          // Conteúdo ocupa a tela inteira; passa por trás do pill.
+          // O scroll do Dashboard tem padding interno para rolar
+          // o último item acima do pill.
           ValueListenableBuilder(
               valueListenable: bottomNavigatorTrigger,
               builder: (BuildContext context, _, __) {
                 return PageStorage(
                     child: dashBoardScreens[bottomNavigatorTrigger.value],
                     bucket: bucket);
-              })
-        ]),
-        bottomNavigationBar: Container(
-            width: double.infinity,
-            height: 90,
-            padding: EdgeInsets.only(top: 10, right: 30, left: 30),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-                color: HexColor.fromHex("#181a1f").withOpacity(0.8)),
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  BottomNavigationItem(
-                      itemIndex: 0,
-                      notifier: bottomNavigatorTrigger,
-                      icon: Icons.widgets),
-                  Spacer(),
-                  BottomNavigationItem(
-                      itemIndex: 1,
-                      notifier: bottomNavigatorTrigger,
-                      icon: FeatherIcons.clipboard),
-                  Spacer(),
-                  DashboardAddButton(
-                    iconTapped: (() {
-                      showAppBottomSheet(Container(
-                          height: Utils.screenHeight * 0.8,
-                          child: DashboardAddBottomSheet()));
-                    }),
-                  ),
-                  Spacer(),
-                  BottomNavigationItem(
-                      itemIndex: 2,
-                      notifier: bottomNavigatorTrigger,
-                      icon: FeatherIcons.bell),
-                  Spacer(),
-                  BottomNavigationItem(
-                      itemIndex: 3,
-                      notifier: bottomNavigatorTrigger,
-                      icon: FeatherIcons.search)
-                ])));
+              }),
+          // Pill flutuante — fora do bottomNavigationBar para área transparente ao redor
+          Positioned(
+            left: _pillSide,
+            right: _pillSide,
+            bottom: _pillBottom + systemBottom,
+            child: Container(
+                height: _pillHeight,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(40),
+                    color: pillColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.4),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      )
+                    ]),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      BottomNavigationItem(
+                          itemIndex: 0,
+                          notifier: bottomNavigatorTrigger,
+                          icon: Icons.widgets),
+                      BottomNavigationItem(
+                          itemIndex: 1,
+                          notifier: bottomNavigatorTrigger,
+                          icon: FeatherIcons.clipboard),
+                      DashboardAddButton(
+                        iconTapped: (() {
+                          showAppBottomSheet(Container(
+                              height: Utils.screenHeight * 0.8,
+                              child: DashboardAddBottomSheet()));
+                        }),
+                      ),
+                      BottomNavigationItem(
+                          itemIndex: 2,
+                          notifier: bottomNavigatorTrigger,
+                          icon: FeatherIcons.bell),
+                      BottomNavigationItem(
+                          itemIndex: 3,
+                          notifier: bottomNavigatorTrigger,
+                          icon: FeatherIcons.search)
+                    ])),
+          ),
+        ]));
   }
 }

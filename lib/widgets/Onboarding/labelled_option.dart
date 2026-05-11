@@ -33,7 +33,7 @@ class LabelledOption extends StatelessWidget {
             child: ListTile(
                 title: Row(
                   children: [
-                    Icon(icon, color: Colors.white, size: 24),
+                    Icon(icon, color: context.palette.textPrimary, size: 24),
                     Text("       $label",
                         style: GoogleFonts.lato(
                           fontSize: 18,
@@ -52,14 +52,14 @@ class LabelledOption extends StatelessWidget {
                     : (label == "Copy")
                         ? Text(link!,
                             style: TextStyle(
-                                color: AppColors.primaryAccentColor,
+                                color: context.palette.accent,
                                 fontWeight: FontWeight.bold))
                         : SizedBox()),
           )),
         ),
 
-        Divider(height: 1, color: HexColor.fromHex("353742"))
-        // Divider(height: 1, color: HexColor.fromHex("616575"))
+        Divider(height: 1, color: context.palette.divider)
+        // Divider(height: 1, color: context.palette.textMuted)
       ],
     );
   }

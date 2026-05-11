@@ -7,15 +7,15 @@ class ProgressCardCloseButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return InkWell(
       onTap: onPressed,
       child: Container(
           width: 25,
           height: 25,
           decoration: BoxDecoration(
-              color: AppColors.primaryAccentColor, shape: BoxShape.circle),
-          child:
-              Center(child: Icon(Icons.close, size: 20, color: Colors.white))),
+              color: palette.accent, shape: BoxShape.circle),
+          child: Center(child: Icon(Icons.close, size: 20, color: palette.textInverse))),
     );
   }
 }

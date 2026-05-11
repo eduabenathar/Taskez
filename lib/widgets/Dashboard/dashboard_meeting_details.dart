@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Screens/Projects/set_members.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/BottomSheets/bottom_sheet_holder.dart';
 import 'package:taskez/widgets/BottomSheets/bottom_sheet_selectable_container.dart';
 import 'package:taskez/widgets/Buttons/primary_buttons.dart';
@@ -15,6 +16,7 @@ class DashboardMeetingDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.only(left: 20.0, right: 20),
       child: SingleChildScrollView(
@@ -37,31 +39,31 @@ class DashboardMeetingDetails extends StatelessWidget {
             textStyle: GoogleFonts.lato(
               fontWeight: FontWeight.w600,
               fontSize: 26,
-              color: Colors.white,
+              color: context.palette.textPrimary,
             ),
           ),
           AppSpaces.verticalSpace10,
           InBottomSheetSubtitle(
-            title: "Tap the logo to upload new file",
+            title: l.meetingDetailsUploadLogo,
             alignment: Alignment.center,
           ),
           AppSpaces.verticalSpace20,
           LabelledSelectableContainer(
-            label: "TEAM NAME",
+            label: l.meetingDetailsTeamName,
             value: "Marketing",
             icon: Icons.share,
           ),
           AppSpaces.verticalSpace20,
           LabelledSelectableContainer(
-            label: "Member",
-            value: "Select Members",
+            label: l.meetingDetailsMember,
+            value: l.meetingDetailsSelectMembers,
             icon: Icons.add,
-            valueColor: AppColors.primaryAccentColor,
+            valueColor: context.palette.accent,
           ),
           AppSpaces.verticalSpace20,
           LabelledSelectableContainer(
-            label: "Privacy",
-            value: "Public",
+            label: l.meetingDetailsPrivacy,
+            value: l.meetingDetailsPublic,
             icon: Icons.expand_more,
             containerColor: HexColor.fromHex("A06AF9"),
           ),
@@ -69,7 +71,7 @@ class DashboardMeetingDetails extends StatelessWidget {
           AppPrimaryButton(
               buttonHeight: 50,
               buttonWidth: 180,
-              buttonText: "Create New Team",
+              buttonText: l.meetingDetailsCreateNewTeam,
               callback: () {
                 Get.to(() => SelectMembersScreen());
               }),

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:taskez/Data/my_task.dart';
 import 'Shapes/roundedborder_with_icon.dart';
+import 'package:taskez/Theme/app_palette.dart';
 
 const kBlueCircleForCalendar = BoxDecoration(
   color: const Color(0xFF246CFD),
@@ -44,7 +45,7 @@ class _CalendarViewState extends State<CalendarView> {
     return
         //isClassLoading ? CustomWidget.rectangular(height: 300) :
         Container(
-      decoration: BoxDecoration(color: const Color(0xFF262A34), borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(color: context.palette.background, borderRadius: BorderRadius.circular(10)),
       child: TableCalendar(
         // event here
         eventLoader: _getEventsForDay,
@@ -72,8 +73,8 @@ class _CalendarViewState extends State<CalendarView> {
             )),
         calendarStyle: CalendarStyle(
             weekendTextStyle: TextStyle(color: Colors.grey),
-            defaultTextStyle: TextStyle(color: Colors.white),
-            outsideTextStyle: TextStyle(color: Colors.white),
+            defaultTextStyle: TextStyle(color: context.palette.textPrimary),
+            outsideTextStyle: TextStyle(color: context.palette.textPrimary),
             markerDecoration: kBlueCircleForCalendar.copyWith(color: const Color(0xCC448AFF)),
             markerSize: 5,
             selectedDecoration: kBlueCircleForCalendar,

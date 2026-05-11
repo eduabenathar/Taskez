@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 
 class BarChartSample1 extends StatefulWidget {
   final List<Color> availableColors = [
@@ -43,9 +44,9 @@ class BarChartSample1State extends State<BarChartSample1> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Completed in the last 7 Days",
+                  Text(AppLocalizations.of(context).barChartLast7Days,
                       style: GoogleFonts.lato(
-                          color: HexColor.fromHex("616575"), fontSize: 13)),
+                          color: context.palette.textMuted, fontSize: 13)),
                   IconButton(
                     icon: Icon(
                       isPlaying ? Icons.pause : Icons.play_arrow,
@@ -175,7 +176,7 @@ class BarChartSample1State extends State<BarChartSample1> {
               return BarTooltipItem(
                 weekDay + '\n',
                 TextStyle(
-                  color: Colors.white,
+                  color: context.palette.textPrimary,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
@@ -358,8 +359,8 @@ class _BarChartTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: const TextStyle(
-        color: Colors.white,
+      style: TextStyle(
+        color: context.palette.textPrimary,
         fontWeight: FontWeight.bold,
         fontSize: 12,
       ),

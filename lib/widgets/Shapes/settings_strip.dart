@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskez/Theme/app_palette.dart';
 
 class SettingsStrip extends StatelessWidget {
   const SettingsStrip({Key? key}) : super(key: key);
@@ -11,10 +12,10 @@ class SettingsStrip extends StatelessWidget {
           height: 10,
           decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 1))),
+              border: Border.all(color: context.palette.textPrimary, width: 1))),
       SizedBox(width: 2),
       Container(
-          width: 12, height: 2, decoration: BoxDecoration(color: Colors.grey))
+          width: 12, height: 2, decoration: BoxDecoration(color: context.palette.iconMuted))
     ]);
   }
 }

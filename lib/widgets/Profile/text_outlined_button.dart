@@ -11,21 +11,20 @@ class OutlinedButtonWithText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Container(
         width: this.width,
         height: 45,
         child: ElevatedButton(
             onPressed: onPressed,
             style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all(HexColor.fromHex("181A1F")),
+                backgroundColor: MaterialStateProperty.all(palette.surface),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50.0),
-                        side: BorderSide(
-                            color: HexColor.fromHex("246EFE"), width: 2)))),
+                        side: BorderSide(color: palette.accent, width: 2)))),
             child: Center(
                 child: Text(content,
-                    style: TextStyle(fontSize: 17, color: Colors.white)))));
+                    style: TextStyle(fontSize: 17, color: palette.textPrimary)))));
   }
 }

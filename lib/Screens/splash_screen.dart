@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Stack(children: [
         DarkRadialBackground(
-          color: HexColor.fromHex("#181a1f"),
+          color: context.palette.surface,
           position: "topLeft",
         ),
         Positioned(left: 140, child: AppLogo()),

@@ -7,7 +7,6 @@ enum PrimaryButtonSizes { small, medium, large }
 class AppPrimaryButton extends StatelessWidget {
   final double buttonHeight;
   final double buttonWidth;
-
   final String buttonText;
   final VoidCallback? callback;
   const AppPrimaryButton(
@@ -21,19 +20,16 @@ class AppPrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      //padding: EdgeInsets.all(20),
-      // width: 180,
-      // height: 50,
       width: buttonWidth,
       height: buttonHeight,
       child: ElevatedButton(
           onPressed: callback,
-          style: ButtonStyles.blueRounded,
+          style: ButtonStyles.blueRounded(context),
           child: Text(buttonText,
               style: GoogleFonts.lato(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white))),
+                  color: context.palette.textInverse))),
     );
   }
 }

@@ -1,32 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 
+import 'Controllers/locale_controller.dart';
 import 'Screens/splash_screen.dart';
+import 'Theme/app_theme.dart';
+import 'Theme/theme_controller.dart';
+import 'l10n/app_localizations.dart';
 
-void main() {
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await ThemeController.instance.load();
+  await LocaleController.instance.load();
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
-    systemNavigationBarIconBrightness: Brightness.light,
-    statusBarIconBrightness: Brightness.light,
   ));
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Taskez',
-      theme: ThemeData(
-        brightness: Brightness.light,
-        appBarTheme: AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle.light,
-        ),
-      ),
-      home: SplashScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: ThemeController.instance.mode,
+      builder: (context, mode, _) {
+        return ValueListenableBuilder<Locale?>(
+          valueListenable: LocaleController.instance.locale,
+          builder: (context, locale, __) {
+            return GetMaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'Taskez',
+              theme: buildLightTheme(),
+              darkTheme: buildDarkTheme(),
+              themeMode: mode,
+              locale: locale,
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              localeResolutionCallback: (device, supported) =>
+                  LocaleController.resolve(device),
+              home: SplashScreen(),
+            );
+          },
+        );
+      },
     );
   }
 }

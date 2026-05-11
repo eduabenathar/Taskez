@@ -18,7 +18,7 @@ class PostBottomWidget extends StatelessWidget {
             width: Utils.screenWidth,
             height: 120,
             decoration: BoxDecoration(
-                color: AppColors.primaryBackgroundColor,
+                color: context.palette.background,
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20))),
@@ -31,13 +31,13 @@ class PostBottomWidget extends StatelessWidget {
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                        color: AppColors.primaryAccentColor,
+                        color: context.palette.accent,
                         shape: BoxShape.circle),
                     child:
-                        Icon(Icons.attach_file, color: Colors.white, size: 30)),
+                        Icon(Icons.attach_file, color: context.palette.textPrimary, size: 30)),
               ),
               AppSpaces.horizontalSpace20,
-              Text(label, style: GoogleFonts.lato(color: Colors.white))
+              Text(label, style: GoogleFonts.lato(color: context.palette.textPrimary))
             ]))));
   }
 }

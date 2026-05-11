@@ -63,7 +63,7 @@ class SelectableContainer extends StatelessWidget {
               style: GoogleFonts.lato(
                 color: valueColor ?? Colors.white,
               )),
-          Icon(icon, color: Colors.white)
+          Icon(icon, color: context.palette.textPrimary)
         ]));
   }
 }

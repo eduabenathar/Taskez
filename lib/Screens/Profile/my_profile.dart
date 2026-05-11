@@ -4,11 +4,13 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Screens/Profile/edit_profile.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Navigation/default_back.dart';
 import 'package:taskez/widgets/Onboarding/toggle_option.dart';
 import 'package:taskez/widgets/Profile/profile_text_option.dart';
 import 'package:taskez/widgets/Profile/text_outlined_button.dart';
+import 'package:taskez/widgets/Profile/theme_mode_selector.dart';
 import 'package:taskez/widgets/dummy/profile_dummy.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -22,10 +24,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l = AppLocalizations.of(context);
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: palette.surface,
         position: "topLeft",
       ),
       Padding(
@@ -35,7 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Column(
               children: [
                 DefaultNav(
-                    title: "$tabSpace Profile", type: ProfileDummyType.Button),
+                    title: "$tabSpace ${l.profileTitle}", type: ProfileDummyType.Button),
                 SizedBox(height: 30),
                 ProfileDummy(
                     color: HexColor.fromHex("94F0F1"),
@@ -46,18 +50,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text("Blake Gordon",
                       style: GoogleFonts.lato(
-                          color: Colors.white,
+                          color: palette.textPrimary,
                           fontSize: 40,
                           fontWeight: FontWeight.bold)),
                 ),
                 Text("blake@email.com",
                     style: GoogleFonts.lato(
-                        color: HexColor.fromHex("B0FFE1"), fontSize: 17)),
+                        color: palette.textSecondary, fontSize: 17)),
                 Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: OutlinedButtonWithText(
                       width: 75,
-                      content: "Edit",
+                      content: l.profileEdit,
                       onPressed: () {
                         Get.to(() => EditProfilePage());
                       }),
@@ -67,13 +71,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFF262A34),
+                        color: palette.surface,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
                         children: [
                           ToggleLabelOption(
-                            label: '$tabSpace Show me as away',
+                            label: '$tabSpace ${l.profileShowMeAsAway}',
                             notifierValue: totalTaskNotifier,
                             icon: Icons.directions_run_rounded,
                             margin: 7.0,
@@ -83,28 +87,30 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     AppSpaces.verticalSpace10,
                     ProfileTextOption(
-                      label: '$tabSpace My Projects',
+                      label: '$tabSpace ${l.profileMyProjects}',
                       icon: Icons.cast,
                       margin: 5.0,
                     ),
                     AppSpaces.verticalSpace10,
                     ProfileTextOption(
-                      label: '$tabSpace Join A Team',
+                      label: '$tabSpace ${l.profileJoinATeam}',
                       icon: Icons.group_add,
                       margin: 5.0,
                     ),
                     AppSpaces.verticalSpace10,
                     ProfileTextOption(
-                      label: '$tabSpace Share Profile',
+                      label: '$tabSpace ${l.profileShareProfile}',
                       icon: FeatherIcons.share2,
                       margin: 5.0,
                     ),
                     AppSpaces.verticalSpace10,
                     ProfileTextOption(
-                      label: '$tabSpace All My Task',
+                      label: '$tabSpace ${l.profileAllMyTask}',
                       icon: Icons.check_circle_outline,
                       margin: 5.0,
-                    )
+                    ),
+                    AppSpaces.verticalSpace20,
+                    const ThemeModeSelector(),
                   ],
                 ),
               ],

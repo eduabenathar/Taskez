@@ -14,7 +14,7 @@ class LoadingSticker extends StatelessWidget {
         padding: EdgeInsets.only(left: 10, top: 5, bottom: 5),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50.0),
-            color: AppColors.primaryBackgroundColor),
+            color: context.palette.background),
         child: Row(children: [
           Container(
               width: 30,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskez/BottomSheets/bottom_sheets.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/BottomSheets/bottom_sheet_holder.dart';
 import 'package:taskez/widgets/Dashboard/sheet_goto_calendar.dart';
 import 'package:taskez/widgets/Forms/form_input_unlabelled.dart';
@@ -15,6 +16,7 @@ class DashboardDesignMeetingSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final _meetingNameController = new TextEditingController();
 
     return SingleChildScrollView(
@@ -43,7 +45,7 @@ class DashboardDesignMeetingSheet extends StatelessWidget {
                   AppSpaces.horizontalSpace20,
                   Expanded(
                     child: UnlabelledFormInput(
-                      placeholder: "Design Meeting",
+                      placeholder: l.meetingPlaceholder,
                       keyboardType: "text",
                       autofocus: true,
                       controller: _meetingNameController,
@@ -55,20 +57,20 @@ class DashboardDesignMeetingSheet extends StatelessWidget {
               AppSpaces.verticalSpace20,
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 SheetGoToCalendarWidget(
-                  cardBackgroundColor: AppColors.primaryAccentColor,
+                  cardBackgroundColor: context.palette.accent,
                   textAccentColor: HexColor.fromHex("90E7E7"),
                   value: 'Today 3PM',
-                  label: 'Due Date',
+                  label: l.taskDueDate,
                 ),
                 SheetGoToCalendarWidget(
                   cardBackgroundColor: HexColor.fromHex("C25DFF"),
                   textAccentColor: HexColor.fromHex("E699E9"),
                   value: 'Today 4:30PM',
-                  label: 'End',
+                  label: l.meetingEndLabel,
                 )
               ]),
               AppSpaces.verticalSpace20,
-              InBottomSheetSubtitle(title: "INVITES"),
+              InBottomSheetSubtitle(title: l.meetingInvitesSection),
               AppSpaces.verticalSpace10,
               FilledSelectableContainer(),
               AppSpaces.verticalSpace20,
@@ -76,7 +78,7 @@ class DashboardDesignMeetingSheet extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: AddSubIcon(
                   scale: 0.8,
-                  color: AppColors.primaryAccentColor,
+                  color: context.palette.accent,
                   callback: _addMeetingDetails,
                 ),
               ),

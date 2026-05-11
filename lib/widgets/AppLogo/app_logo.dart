@@ -14,7 +14,7 @@ class AppLogo extends StatelessWidget {
               (Utils.screenWidth)
                   .toDouble()), //You can Replace [WIDTH] with your desired width for Custom Paint and height will be calculated automatically
           painter: RPSCustomPainter(),
-          // child: Icon(Icons.ac_unit_outlined, color: Colors.white),
+          // child: Icon(Icons.ac_unit_outlined, color: context.palette.textPrimary),
         ),
       ),
       Positioned(
@@ -24,7 +24,7 @@ class AppLogo extends StatelessWidget {
               decoration: BoxDecoration(shape: BoxShape.circle, color: HexColor.fromHex("#84c16c")),
               width: 50,
               height: 50,
-              child: Icon(Icons.done, color: Colors.white))),
+              child: Icon(Icons.done, color: context.palette.textPrimary))),
       Positioned(top: Utils.screenHeight / 1.25, left: Utils.screenWidth / 11, child: TripletsLogo())
     ]);
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Constants/constants.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Forms/search_box.dart';
 import 'package:taskez/widgets/Navigation/app_header.dart';
@@ -11,11 +12,12 @@ class NewMessageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final _searchController = new TextEditingController();
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: context.palette.surface,
         position: "topLeft",
       ),
       Padding(
@@ -25,7 +27,7 @@ class NewMessageScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(right: 20, left: 20),
               child: TaskezAppHeader(
-                title: "New Message",
+                title: l.newMessageTitle,
                 widget: SizedBox(),
               ),
             ),
@@ -35,11 +37,11 @@ class NewMessageScreen extends StatelessWidget {
                 child: Container(
                     width: double.infinity,
                     height: double.infinity,
-                    decoration: BoxDecorationStyles.fadingGlory,
+                    decoration: BoxDecorationStyles.fadingGlory(context),
                     child: Padding(
                         padding: const EdgeInsets.all(3.0),
                         child: DecoratedBox(
-                            decoration: BoxDecorationStyles.fadingInnerDecor,
+                            decoration: BoxDecorationStyles.fadingInnerDecor(context),
                             child: Padding(
                                 padding: const EdgeInsets.all(20.0),
                                 child: Column(
@@ -55,12 +57,12 @@ class NewMessageScreen extends StatelessWidget {
                                           Expanded(
                                             flex: 3,
                                             child: SearchBox(
-                                                placeholder: 'Search Members',
+                                                placeholder: l.newMessageSearchMembers,
                                                 controller: _searchController),
                                           ),
                                           Expanded(
                                               flex: 1,
-                                              child: Text("Cancel",
+                                              child: Text(l.commonCancel,
                                                   textAlign: TextAlign.right,
                                                   style: GoogleFonts.lato(
                                                       color: HexColor.fromHex(
@@ -71,16 +73,16 @@ class NewMessageScreen extends StatelessWidget {
                                         ],
                                       ),
                                       AppSpaces.verticalSpace20,
-                                      Text("SUGGESTED",
+                                      Text(l.newMessageSuggested,
                                           style: GoogleFonts.lato(
                                             fontSize: 11,
                                             fontWeight: FontWeight.w500,
-                                            color: HexColor.fromHex("616575"),
+                                            color: context.palette.textMuted,
                                           )),
                                       AppSpaces.verticalSpace20,
                                       Divider(
                                         height: 2,
-                                        color: HexColor.fromHex("616575"),
+                                        color: context.palette.textMuted,
                                       ),
                                       AppSpaces.verticalSpace20,
                                       Expanded(

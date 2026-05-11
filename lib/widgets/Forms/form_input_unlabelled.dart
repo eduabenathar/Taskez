@@ -22,56 +22,48 @@ class UnlabelledFormInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return TextFormField(
       controller: controller,
       autofocus: autofocus ?? false,
       style: GoogleFonts.lato(
-          fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+          fontWeight: FontWeight.bold, fontSize: 18, color: palette.textPrimary),
       onTap: () {},
       keyboardType:
           keyboardType == "text" ? TextInputType.text : TextInputType.number,
-      //initialValue: initialValue,
       obscureText:
           placeholder == 'Password' || placeholder == 'Choose a password'
               ? true
               : false,
-
       decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 0,
-            vertical: 18,
-          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 18),
           suffixIcon: placeholder == "Password"
               ? InkWell(
                   onTap: () {},
                   child: Icon(
-                    obscureText
-                        ? FontAwesomeIcons.eye
-                        : FontAwesomeIcons.eyeSlash,
+                    obscureText ? FontAwesomeIcons.eye : FontAwesomeIcons.eyeSlash,
                     size: 15.0,
-                    color: HexColor.fromHex("3C3E49"),
+                    color: palette.iconMuted,
                   ))
               : InkWell(
-                  onTap: () {
-                    controller!.text = "";
-                  },
+                  onTap: () { controller!.text = ""; },
                   child: Icon(FontAwesomeIcons.solidTimesCircle,
-                      color: Colors.white70, size: 20),
+                      color: palette.textSecondary, size: 20),
                 ),
           hintText: placeholder,
           hintStyle: GoogleFonts.lato(
               fontWeight: FontWeight.bold,
               fontSize: 18,
-              color: HexColor.fromHex("3C3E49")),
+              color: palette.textMuted),
           filled: false,
           enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: HexColor.fromHex("3C3E49")),
+            borderSide: BorderSide(color: palette.divider),
           ),
           focusedBorder: UnderlineInputBorder(
             borderSide: BorderSide(color: HexColor.fromHex("BEF0B2")),
           ),
           border: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.green))),
+              borderSide: BorderSide(color: palette.accent))),
     );
   }
 }

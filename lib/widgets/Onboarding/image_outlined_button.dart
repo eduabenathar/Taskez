@@ -13,7 +13,7 @@ class OutlinedButtonWithImage extends StatelessWidget {
         height: 60,
         child: ElevatedButton(
             onPressed: () {},
-            style: ButtonStyles.imageRounded,
+            style: ButtonStyles.imageRounded(context),
             child: Center(
               child: Container(
                 width: 30,

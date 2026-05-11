@@ -13,28 +13,33 @@ class PrimaryTabButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 5),
       child: ValueListenableBuilder(
           valueListenable: notifier,
           builder: (BuildContext context, _, __) {
+            final selected = notifier.value == itemIndex;
+            final bg = selected ? palette.accent : palette.surface;
+            final border = selected ? palette.accent : palette.surface;
             return ElevatedButton(
                 onPressed: () {
                   notifier.value = itemIndex;
-                  if (callback != null) {
-                    callback!();
-                  }
+                  if (callback != null) callback!();
                 },
                 style: ButtonStyle(
-                    backgroundColor: notifier.value == itemIndex
-                        ? MaterialStateProperty.all<Color>(HexColor.fromHex("246CFE"))
-                        : MaterialStateProperty.all<Color>(HexColor.fromHex("181A1F")),
+                    padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 6)),
+                    minimumSize: MaterialStateProperty.all<Size>(Size.zero),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    backgroundColor: MaterialStateProperty.all<Color>(bg),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50.0),
-                        side: notifier.value == itemIndex
-                            ? BorderSide(color: HexColor.fromHex("246CFE"))
-                            : BorderSide(color: HexColor.fromHex("181A1F"))))),
-                child: Text(buttonText, style: GoogleFonts.lato(fontSize: 16, color: Colors.white)));
+                        side: BorderSide(color: border)))),
+                child: Text(buttonText,
+                    style: GoogleFonts.lato(
+                        fontSize: 16,
+                        color: selected ? palette.textInverse : palette.textPrimary)));
           }),
     );
   }

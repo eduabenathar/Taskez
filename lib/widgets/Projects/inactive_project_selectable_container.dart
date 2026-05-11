@@ -40,7 +40,7 @@ class InactiveProjectSelectableContainer extends StatelessWidget {
           height: 70,
           padding: EdgeInsets.all(20.0),
           decoration: BoxDecoration(
-              color: AppColors.primaryBackgroundColor,
+              color: context.palette.background,
               borderRadius: BorderRadius.circular(10)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -51,12 +51,12 @@ class InactiveProjectSelectableContainer extends StatelessWidget {
                   height: 50,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey, width: 2)),
+                      border: Border.all(color: context.palette.iconMuted, width: 2)),
                 ),
                 AppSpaces.horizontalSpace20,
                 Text(header,
                     style: GoogleFonts.lato(
-                        color: Colors.white,
+                        color: context.palette.textPrimary,
                         fontWeight: FontWeight.w600,
                         fontSize: 18)),
               ]),

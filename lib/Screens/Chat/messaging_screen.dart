@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Chat/online_user.dart';
 import 'package:taskez/widgets/Chat/post_bottom_widget.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
@@ -24,7 +25,7 @@ class MessagingScreen extends StatelessWidget {
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: context.palette.surface,
         position: "topLeft",
       ),
       Padding(
@@ -37,7 +38,7 @@ class MessagingScreen extends StatelessWidget {
                   title: "$userName",
                   messagingPage: true,
                   widget: Row(children: [
-                    Icon(Icons.phone, color: Colors.white),
+                    Icon(Icons.phone, color: context.palette.textPrimary),
                     AppSpaces.horizontalSpace20,
                     Container(
                         width: 40,
@@ -45,8 +46,8 @@ class MessagingScreen extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.0),
-                            border: Border.all(width: 3, color: HexColor.fromHex("31333D"))),
-                        child: Center(child: Icon(Icons.more_vert, color: Colors.white))),
+                            border: Border.all(width: 3, color: context.palette.divider)),
+                        child: Center(child: Icon(Icons.more_vert, color: context.palette.textPrimary))),
                   ]),
                 ),
               ],
@@ -72,10 +73,10 @@ class MessagingScreen extends StatelessWidget {
                           width: 250,
                           padding: EdgeInsets.only(left: 20, right: 20, top: 15, bottom: 15),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryBackgroundColor,
+                            color: context.palette.background,
                             borderRadius: BorderRadius.circular(50),
                           ),
-                          child: Text("Hi man, how are you doing?", style: GoogleFonts.lato(color: Colors.white))),
+                          child: Text("Hi man, how are you doing?", style: GoogleFonts.lato(color: context.palette.textPrimary))),
                     )
                   ],
                 ),
@@ -97,13 +98,13 @@ class MessagingScreen extends StatelessWidget {
                               //height: 50,
                               padding: EdgeInsets.only(left: 20, right: 20, top: 15, bottom: 15),
                               decoration: BoxDecoration(
-                                color: AppColors.primaryBackgroundColor,
+                                color: context.palette.background,
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(50),
                                     topRight: Radius.circular(50),
                                     bottomRight: Radius.circular(50)),
                               ),
-                              child: Text("Just one question 😂", style: GoogleFonts.lato(color: Colors.white))),
+                              child: Text("Just one question 😂", style: GoogleFonts.lato(color: context.palette.textPrimary))),
                           AppSpaces.verticalSpace10,
                           Container(
                               alignment: Alignment.centerLeft,
@@ -111,14 +112,14 @@ class MessagingScreen extends StatelessWidget {
                               //height: 50,
                               padding: EdgeInsets.only(left: 20, right: 20, top: 15, bottom: 15),
                               decoration: BoxDecoration(
-                                color: AppColors.primaryBackgroundColor,
+                                color: context.palette.background,
                                 borderRadius: BorderRadius.only(
                                     bottomLeft: Radius.circular(50),
                                     topRight: Radius.circular(50),
                                     bottomRight: Radius.circular(50)),
                               ),
                               child: Text("Can you please send me your latest mockup? ",
-                                  style: GoogleFonts.lato(color: Colors.white))),
+                                  style: GoogleFonts.lato(color: context.palette.textPrimary))),
                           AppSpaces.verticalSpace10,
                           Container(
                             height: 120,
@@ -143,14 +144,14 @@ class MessagingScreen extends StatelessWidget {
                               right: 10,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.primaryBackgroundColor,
+                              color: context.palette.background,
                               borderRadius: BorderRadius.circular(50),
                             ),
-                            child: Icon(Icons.more_horiz, color: HexColor.fromHex("7F8088"), size: 40)),
+                            child: Icon(Icons.more_horiz, color: context.palette.iconMuted, size: 40)),
                       ],
                     ))
               ]))),
-      PostBottomWidget(label: "Write a message")
+      PostBottomWidget(label: AppLocalizations.of(context).chatWriteMessagePlaceholder)
     ]));
   }
 }
@@ -196,10 +197,10 @@ class SenderMessage extends StatelessWidget {
               width: 200,
               padding: EdgeInsets.only(left: 20, right: 20, top: 12, bottom: 12),
               decoration: BoxDecoration(
-                color: AppColors.primaryAccentColor,
+                color: context.palette.accent,
                 borderRadius: BorderRadius.circular(50),
               ),
-              child: Text(message, style: GoogleFonts.lato(color: Colors.white))),
+              child: Text(message, style: GoogleFonts.lato(color: context.palette.textPrimary))),
         ],
       ),
     );
@@ -246,6 +247,6 @@ class TimeReceipt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(time, style: GoogleFonts.lato(color: Colors.white));
+    return Text(time, style: GoogleFonts.lato(color: context.palette.textPrimary));
   }
 }

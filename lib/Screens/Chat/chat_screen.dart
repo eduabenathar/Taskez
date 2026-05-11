@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:taskez/Constants/constants.dart';
 import 'package:taskez/Screens/Chat/new_group.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Chat/add_chat_icon.dart';
 import 'package:taskez/widgets/Chat/badged_title.dart';
 import 'package:taskez/widgets/Chat/selection_tab.dart';
@@ -15,11 +16,12 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final _searchController = TextEditingController();
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: context.palette.surface,
         position: "topLeft",
       ),
       Padding(
@@ -28,13 +30,13 @@ class ChatScreen extends StatelessWidget {
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             TaskezAppHeader(
-              title: "Chat",
+              title: l.chatTitle,
               widget: AppAddIcon(page: NewMessageScreen()),
             ),
             AppSpaces.verticalSpace20,
-            SearchBox(placeholder: 'Search', controller: _searchController),
+            SearchBox(placeholder: l.commonSearch, controller: _searchController),
             AppSpaces.verticalSpace20,
-            SelectionTab(title: "GROUP", page: NewGroupScreen()),
+            SelectionTab(title: l.chatGroupSection, page: NewGroupScreen()),
             AppSpaces.verticalSpace20,
             BadgedTitle(
               title: "Marketing",
@@ -45,7 +47,7 @@ class ChatScreen extends StatelessWidget {
             Transform.scale(
                 alignment: Alignment.centerLeft,
                 scale: 0.8,
-                child: buildStackedImages(numberOfMembers: "8")),
+                child: buildStackedImages(context: context, numberOfMembers: "8")),
             AppSpaces.verticalSpace20,
             BadgedTitle(
               title: "Design",
@@ -56,9 +58,9 @@ class ChatScreen extends StatelessWidget {
             Transform.scale(
                 alignment: Alignment.centerLeft,
                 scale: 0.8,
-                child: buildStackedImages(numberOfMembers: "2")),
+                child: buildStackedImages(context: context, numberOfMembers: "2")),
             AppSpaces.verticalSpace20,
-            SelectionTab(title: "DIRECT MESSAGES", page: NewMessageScreen()),
+            SelectionTab(title: l.chatDirectMessagesSection, page: NewMessageScreen()),
             AppSpaces.verticalSpace20,
             Expanded(
                 child: MediaQuery.removePadding(

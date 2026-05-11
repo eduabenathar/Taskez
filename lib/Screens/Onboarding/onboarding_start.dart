@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Screens/Onboarding/onboarding_carousel.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Onboarding/background_image.dart';
 import 'package:taskez/widgets/Onboarding/bubble.dart';
@@ -14,17 +15,18 @@ import 'package:taskez/widgets/Shapes/background_hexagon.dart';
 class OnboardingStart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       body: Stack(children: [
         DarkRadialBackground(
-          color: HexColor.fromHex("#181a1f"),
+          color: context.palette.surface,
           position: "topLeft",
         ),
 
         Positioned(
             top: Utils.screenHeight,
             left: 0,
-            child: Transform.rotate(angle: -math.pi / 2, child: CustomPaint(painter: BackgroundHexagon()))),
+            child: Transform.rotate(angle: -math.pi / 2, child: CustomPaint(painter: BackgroundHexagon(color: context.palette.background)))),
         //images
         Positioned(
             top: Utils.screenHeight * 0.7,
@@ -106,7 +108,7 @@ class OnboardingStart extends StatelessWidget {
                   children: [
                     RichText(
                       text: TextSpan(
-                        text: 'Task Management ',
+                        text: l.onboardingStartTagline,
                         style: GoogleFonts.lato(fontSize: 18, color: HexColor.fromHex("FDA5FF")),
                         children: <TextSpan>[
                           TextSpan(
@@ -115,8 +117,8 @@ class OnboardingStart extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Text('Lets create\na space\nfor your workflows.',
-                        style: GoogleFonts.lato(color: Colors.white, fontSize: 35, fontWeight: FontWeight.bold)),
+                    Text(l.onboardingStartHeadline,
+                        style: GoogleFonts.lato(color: context.palette.textPrimary, fontSize: 35, fontWeight: FontWeight.bold)),
                     AppSpaces.verticalSpace20,
                     Container(
                       width: 180,
@@ -126,12 +128,12 @@ class OnboardingStart extends StatelessWidget {
                             Get.to(() => OnboardingCarousel());
                           },
                           style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(HexColor.fromHex("246CFE")),
+                              backgroundColor: MaterialStateProperty.all<Color>(context.palette.accent),
                               shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50.0),
-                                  side: BorderSide(color: HexColor.fromHex("246CFE"))))),
+                                  side: BorderSide(color: context.palette.accent)))),
                           child: Center(
-                              child: Text('Get Started', style: GoogleFonts.lato(fontSize: 20, color: Colors.white)))),
+                              child: Text(l.onboardingGetStarted, style: GoogleFonts.lato(fontSize: 20, color: context.palette.textInverse)))),
                     )
                   ]),
             ))

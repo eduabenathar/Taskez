@@ -51,7 +51,7 @@ class CircularCalendarCard extends StatelessWidget {
         width: 40 * 1.5,
         height: 40 * 1.5,
         decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        child: Icon(Icons.calendar_today, color: Colors.white));
+        child: Icon(Icons.calendar_today, color: context.palette.textPrimary));
   }
 }
 
@@ -76,7 +76,7 @@ class CircularCardLabel extends StatelessWidget {
           AppSpaces.verticalSpace10,
           Text(label!,
               style: GoogleFonts.lato(
-                  fontSize: 16, color: HexColor.fromHex("626777"))),
+                  fontSize: 16, color: context.palette.textMuted)),
           Text(value!, style: GoogleFonts.lato(fontSize: 16, color: color))
         ]);
   }

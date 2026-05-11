@@ -21,7 +21,7 @@ class InBottomSheetSubtitle extends StatelessWidget {
       child: Text(title,
           style: textStyle ??
               GoogleFonts.lato(
-                  fontSize: 12, color: HexColor.fromHex("626777"))),
+                  fontSize: 12, color: context.palette.textMuted)),
     );
   }
 }

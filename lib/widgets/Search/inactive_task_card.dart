@@ -23,7 +23,7 @@ class InactiveTaskCard extends StatelessWidget {
           height: 100,
           padding: EdgeInsets.all(20.0),
           decoration: BoxDecoration(
-              border: Border.all(color: AppColors.primaryBackgroundColor, width: 4),
+              border: Border.all(color: context.palette.background, width: 4),
               borderRadius: BorderRadius.circular(10)),
           child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Row(children: [
@@ -32,7 +32,7 @@ class InactiveTaskCard extends StatelessWidget {
                   height: 50,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.primaryBackgroundColor,
+                    color: context.palette.background,
                   ),
                   child: GreenDoneIcon()),
               AppSpaces.horizontalSpace20,
@@ -41,7 +41,7 @@ class InactiveTaskCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(header,
-                        style: GoogleFonts.lato(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18)),
+                        style: GoogleFonts.lato(color: context.palette.textPrimary, fontWeight: FontWeight.w600, fontSize: 18)),
                     Text(subHeader, style: GoogleFonts.lato(color: HexColor.fromHex("5A5E6D")))
                   ])
             ]),

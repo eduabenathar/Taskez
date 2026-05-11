@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskez/Theme/app_palette.dart';
 
 enum ProfileDummyType { Icon, Image, Button }
 
@@ -25,7 +26,7 @@ class ProfileDummy extends StatelessWidget {
         decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         child: ClipOval(
             child: this.dummyType == ProfileDummyType.Icon
-                ? Icon(Icons.person, color: Colors.white, size: 30 * scale)
+                ? Icon(Icons.person, color: context.palette.textPrimary, size: 30 * scale)
                 : Image(
                     fit: (scale == 1.2) ? BoxFit.cover : BoxFit.contain,
                     image: AssetImage(

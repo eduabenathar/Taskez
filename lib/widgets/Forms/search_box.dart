@@ -8,7 +8,6 @@ import 'package:taskez/Values/values.dart';
 
 class SearchBox extends StatelessWidget {
   final String placeholder;
-
   final TextEditingController? controller;
   const SearchBox({
     Key? key,
@@ -18,45 +17,30 @@ class SearchBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return TextFormField(
       controller: controller,
-      style: GoogleFonts.lato(fontSize: 20, color: Colors.white),
+      style: GoogleFonts.lato(fontSize: 20, color: palette.textPrimary),
       onTap: () {},
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderSide: BorderSide.none,
           borderRadius: BorderRadius.circular(12.0),
         ),
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 15,
-        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
         prefixIcon: Padding(
           padding: EdgeInsets.only(right: 8.0),
-          child: Icon(FeatherIcons.search, color: Colors.white),
+          child: Icon(FeatherIcons.search, color: palette.iconPrimary),
         ),
         suffixIcon: InkWell(
-          onTap: () {
-            controller!.text = "";
-          },
+          onTap: () { controller!.text = ""; },
           child: Icon(FontAwesomeIcons.solidTimesCircle,
-              color: Colors.white70, size: 20),
+              color: palette.textSecondary, size: 20),
         ),
         hintText: placeholder,
-        hintStyle: GoogleFonts.lato(
-            //fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: HexColor.fromHex("3C3E49")),
+        hintStyle: GoogleFonts.lato(fontSize: 18, color: palette.textMuted),
         filled: true,
-        fillColor: AppColors.primaryBackgroundColor,
-        // enabledBorder: UnderlineInputBorder(
-        //   borderRadius: BorderRadius.circular(10.0),
-        //   borderSide: BorderSide(color: HexColor.fromHex("3C3E49")),
-        // ),
-        // focusedBorder: UnderlineInputBorder(
-        //   borderRadius: BorderRadius.circular(10.0),
-        //   borderSide: BorderSide(color: HexColor.fromHex("BEF0B2")),
-        // ),
+        fillColor: palette.surface,
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:taskez/BottomSheets/bottom_sheets.dart';
 import 'package:taskez/Constants/constants.dart';
 import 'package:taskez/Data/data_model.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Buttons/primary_tab_buttons.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Dashboard/in_bottomsheet_subtitle.dart';
@@ -20,12 +21,13 @@ class TeamDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final _settingsButtonTrigger = ValueNotifier(0);
 
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: context.palette.surface,
         position: "topLeft",
       ),
       Padding(
@@ -35,7 +37,7 @@ class TeamDetails extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                 TaskezAppHeader(
-                    title: "$tabSpace $title Team",
+                    title: "$tabSpace ${l.teamSuffix(title)}",
                     widget: InkWell(
                         onTap: () {
                           showAppBottomSheet(
@@ -49,18 +51,18 @@ class TeamDetails extends StatelessWidget {
                           );
                         },
                         child: Icon(Icons.more_horiz,
-                            size: 30, color: Colors.white))),
+                            size: 30, color: context.palette.textPrimary))),
                 AppSpaces.verticalSpace40,
                 //tab indicators
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     PrimaryTabButton(
-                        buttonText: "Overview",
+                        buttonText: l.dashboardOverviewTab,
                         itemIndex: 0,
                         notifier: _settingsButtonTrigger),
                     PrimaryTabButton(
-                        buttonText: "Calendar",
+                        buttonText: l.teamCalendarTab,
                         itemIndex: 1,
                         notifier: _settingsButtonTrigger),
                   ],
@@ -71,8 +73,7 @@ class TeamDetails extends StatelessWidget {
                     teamTitle: title, numberOfMembers: "12", noImages: "8"),
                 AppSpaces.verticalSpace10,
                 InBottomSheetSubtitle(
-                    title:
-                        "We're a growing family of 371,521 designers and \nmakers from around the world.",
+                    title: l.teamSubtitle,
                     textStyle:
                         GoogleFonts.lato(fontSize: 15, color: Colors.white70)),
                 AppSpaces.verticalSpace40,

@@ -20,11 +20,11 @@ class TaskProgressCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 150,
+        height: 165,
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black12,
+              color: context.palette.shadow,
               blurRadius: 4,
               offset: Offset(4, 8), // Shadow position
             ),
@@ -50,11 +50,11 @@ class TaskProgressCard extends StatelessWidget {
                 children: [
                   Text(cardTitle,
                       style: GoogleFonts.lato(
-                          fontWeight: FontWeight.bold, fontSize: 22)),
+                          fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black)),
                   AppSpaces.verticalSpace10,
                   Text('$rating is completed',
                       style: GoogleFonts.lato(
-                          fontWeight: FontWeight.w500, fontSize: 16)),
+                          fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black)),
                   SizedBox(
                     height: 10,
                   ),
@@ -66,13 +66,13 @@ class TaskProgressCard extends StatelessWidget {
                           decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20.0)),
-                              color: Colors.white),
+                              color: context.palette.textPrimary),
                           child: Row(children: [
                             Expanded(
                                 flex: percentageGap,
                                 child: Container(
                                     decoration: BoxDecoration(
-                                  color: Colors.black,
+                                  color: context.palette.textPrimary,
                                   borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(20.0),
                                     bottomLeft: Radius.circular(20.0),
@@ -82,7 +82,7 @@ class TaskProgressCard extends StatelessWidget {
                           ])),
                       Spacer(),
                       Text("$progressFigure%",
-                          style: GoogleFonts.lato(fontWeight: FontWeight.bold))
+                          style: GoogleFonts.lato(fontWeight: FontWeight.bold, color: Colors.black))
                     ],
                   )
                 ],

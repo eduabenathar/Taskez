@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Buttons/primary_tab_buttons.dart';
 import 'package:taskez/widgets/Forms/search_box.dart';
 import 'package:taskez/widgets/Search/task_card.dart';
@@ -11,6 +12,7 @@ class SearchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final _searchController = new TextEditingController();
     final _settingsButtonTrigger = ValueNotifier(0);
     return Padding(
@@ -28,7 +30,7 @@ class SearchScreen extends StatelessWidget {
                     decoration:
                         BoxDecoration(borderRadius: BorderRadius.circular(10)),
                     child: SearchBox(
-                        placeholder: 'Search Dashboard',
+                        placeholder: l.searchPlaceholder,
                         controller: _searchController),
                   ),
                 ),
@@ -37,10 +39,10 @@ class SearchScreen extends StatelessWidget {
                     child: Container(
                       padding: EdgeInsets.only(top: 20),
                       height: 60,
-                      child: Text("Cancel",
+                      child: Text(l.commonCancel,
                           textAlign: TextAlign.right,
                           style: GoogleFonts.lato(
-                              color: HexColor.fromHex("616575"),
+                              color: context.palette.textMuted,
                               fontSize: 16,
                               fontWeight: FontWeight.bold)),
                     )),
@@ -53,15 +55,15 @@ class SearchScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   PrimaryTabButton(
-                      buttonText: "Task",
+                      buttonText: l.searchTaskTab,
                       itemIndex: 0,
                       notifier: _settingsButtonTrigger),
                   PrimaryTabButton(
-                      buttonText: "Mention",
+                      buttonText: l.searchMentionTab,
                       itemIndex: 1,
                       notifier: _settingsButtonTrigger),
                   PrimaryTabButton(
-                      buttonText: "Files",
+                      buttonText: l.searchFilesTab,
                       itemIndex: 2,
                       notifier: _settingsButtonTrigger)
                 ],
@@ -74,7 +76,7 @@ class SearchScreen extends StatelessWidget {
             ]),
             AppSpaces.verticalSpace20,
             Expanded(
-              child: ListView(children: [
+              child: ListView(padding: const EdgeInsets.only(bottom: 96), children: [
                 SearchTaskCard(
                     activated: false,
                     header: "Unity Dashboard",

@@ -26,10 +26,10 @@ class LayoutListTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(children: [
-              Icon(icon, color: Colors.white, size: 30),
+              Icon(icon, color: context.palette.textPrimary, size: 30),
               AppSpaces.horizontalSpace20,
               Text(title,
-                  style: GoogleFonts.lato(color: Colors.white, fontSize: 20))
+                  style: GoogleFonts.lato(color: context.palette.textPrimary, fontSize: 20))
             ]),
             ValueListenableBuilder(
               valueListenable: notifier,

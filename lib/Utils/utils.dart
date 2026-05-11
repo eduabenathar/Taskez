@@ -19,16 +19,18 @@ class SineCurve extends Curve {
 }
 
 Widget buildStackedImages(
-    {TextDirection direction = TextDirection.rtl,
+    {BuildContext? context,
+    TextDirection direction = TextDirection.rtl,
     String? numberOfMembers,
     bool? addMore}) {
+  final palette = context?.palette ?? AppPalette.dark;
   final double size = 50;
   final double xShift = 20;
 
   Container lastContainer = Container(
       width: 40,
       height: 40,
-      decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+      decoration: BoxDecoration(color: palette.surface, shape: BoxShape.circle),
       child: Center(
         child: Text(numberOfMembers!,
             style: GoogleFonts.lato(
@@ -40,9 +42,8 @@ Widget buildStackedImages(
   Container iconContainer = Container(
       width: 40,
       height: 40,
-      decoration: BoxDecoration(
-          color: AppColors.primaryAccentColor, shape: BoxShape.circle),
-      child: Icon(Icons.add, color: Colors.white));
+      decoration: BoxDecoration(color: palette.accent, shape: BoxShape.circle),
+      child: Icon(Icons.add, color: palette.textInverse));
 
   final items = List.generate(
       4,

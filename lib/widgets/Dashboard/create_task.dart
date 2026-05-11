@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/BottomSheets/bottom_sheets.dart';
 import 'package:taskez/Screens/Task/set_assignees.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/BottomSheets/bottom_sheet_holder.dart';
 import 'package:taskez/widgets/Dashboard/sheet_goto_calendar.dart';
 import 'package:taskez/widgets/Forms/form_input_unlabelled.dart';
@@ -21,6 +22,7 @@ class CreateTaskBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return SingleChildScrollView(
       child: Column(children: [
         AppSpaces.verticalSpace10,
@@ -30,10 +32,10 @@ class CreateTaskBottomSheet extends StatelessWidget {
           padding: EdgeInsets.all(20),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              Icon(Icons.contacts, color: Colors.white),
+              Icon(Icons.contacts, color: context.palette.textPrimary),
               AppSpaces.horizontalSpace10,
-              Text("Unity Dashboard  ", style: GoogleFonts.lato(color: Colors.white, fontWeight: FontWeight.w700)),
-              Icon(Icons.expand_more, color: Colors.white),
+              Text("Unity Dashboard  ", style: GoogleFonts.lato(color: context.palette.textPrimary, fontWeight: FontWeight.w700)),
+              Icon(Icons.expand_more, color: context.palette.textPrimary),
             ]),
             AppSpaces.verticalSpace20,
             Row(
@@ -47,7 +49,7 @@ class CreateTaskBottomSheet extends StatelessWidget {
                 AppSpaces.horizontalSpace20,
                 Expanded(
                   child: UnlabelledFormInput(
-                    placeholder: "Task Name ....",
+                    placeholder: l.createTaskTaskNamePlaceholder,
                     autofocus: true,
                     keyboardType: "text",
                     controller: _taskNameController,
@@ -70,9 +72,9 @@ class CreateTaskBottomSheet extends StatelessWidget {
                       image: "assets/man-head.png"),
                   AppSpaces.horizontalSpace10,
                   CircularCardLabel(
-                    label: 'Assigned to',
+                    label: l.createProjectAssignedTo,
                     value: 'Dereck Boyle',
-                    color: Colors.white,
+                    color: context.palette.textPrimary,
                   )
                 ]),
               ),
@@ -80,7 +82,7 @@ class CreateTaskBottomSheet extends StatelessWidget {
                 cardBackgroundColor: HexColor.fromHex("7DBA67"),
                 textAccentColor: HexColor.fromHex("A9F49C"),
                 value: 'Today 3:00PM',
-                label: 'Due Date',
+                label: l.taskDueDate,
               )
             ]),
             // Spacer(),
@@ -98,7 +100,7 @@ class CreateTaskBottomSheet extends StatelessWidget {
               ),
               AddSubIcon(
                 scale: 0.8,
-                color: AppColors.primaryAccentColor,
+                color: context.palette.accent,
                 callback: _addProject,
               ),
             ])
@@ -129,7 +131,7 @@ class BottomSheetIcon extends StatelessWidget {
     return IconButton(
       icon: Icon(
         icon,
-        color: Colors.white,
+        color: context.palette.textPrimary,
       ),
       iconSize: 32,
       onPressed: null,

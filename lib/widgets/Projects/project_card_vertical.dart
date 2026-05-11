@@ -40,9 +40,9 @@ class ProjectCardVertical extends StatelessWidget {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             ColouredProjectBadge(color: color, category: category),
             AppSpaces.verticalSpace20,
-            Text(projectName, style: GoogleFonts.lato(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600)),
+            Text(projectName, style: GoogleFonts.lato(color: context.palette.textPrimary, fontSize: 20, fontWeight: FontWeight.w600)),
             SizedBox(height: 5),
-            Text(category, style: GoogleFonts.lato(color: HexColor.fromHex("626677"))),
+            Text(category, style: GoogleFonts.lato(color: context.palette.textMuted)),
             Expanded(
                 child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Expanded(
@@ -61,7 +61,7 @@ class ProjectCardVertical extends StatelessWidget {
                     ])),
               ),
               AppSpaces.horizontalSpace10,
-              Text("$ratingsUpperNumber/$ratingsLowerNumber", style: GoogleFonts.lato(color: Colors.white))
+              Text("$ratingsUpperNumber/$ratingsLowerNumber", style: GoogleFonts.lato(color: context.palette.textPrimary))
             ]))
           ])),
     );

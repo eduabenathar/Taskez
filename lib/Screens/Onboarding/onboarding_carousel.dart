@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Screens/Auth/email_address.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Onboarding/image_outlined_button.dart';
 import 'package:taskez/widgets/Onboarding/slider_captioned_image.dart';
@@ -34,13 +35,14 @@ class _OnboardingCarouselState extends State<OnboardingCarousel> {
       width: 8.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isActive ? HexColor.fromHex("266FFE") : HexColor.fromHex("666A7A"),
+        color: isActive ? HexColor.fromHex("266FFE") : context.palette.textMuted,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
         body: AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle.light,
@@ -49,7 +51,7 @@ class _OnboardingCarouselState extends State<OnboardingCarousel> {
                 // height: double.infinity,
                 // width: double.infinity,
                 child: DarkRadialBackground(
-                  color: HexColor.fromHex("#181a1f"),
+                  color: context.palette.surface,
                   position: "bottomRight",
                 ),
               ),
@@ -67,13 +69,13 @@ class _OnboardingCarouselState extends State<OnboardingCarousel> {
                         },
                         children: <Widget>[
                           SliderCaptionedImage(
-                              index: 0, imageUrl: "assets/slider-background-1.png", caption: "Task,\nCalendar,\nChat"),
+                              index: 0, imageUrl: "assets/slider-background-1.png", caption: l.onboardingSlide1),
                           SliderCaptionedImage(
-                              index: 1, imageUrl: "assets/slider-background-3.png", caption: "Work\nAnywhere\nEasily"),
+                              index: 1, imageUrl: "assets/slider-background-3.png", caption: l.onboardingSlide2),
                           SliderCaptionedImage(
                               index: 2,
                               imageUrl: "assets/slider-background-2.png",
-                              caption: "Manage\nEverything\nOn Phone")
+                              caption: l.onboardingSlide3)
                         ])),
                 Padding(
                   padding: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
@@ -93,16 +95,16 @@ class _OnboardingCarouselState extends State<OnboardingCarousel> {
                                 Get.to(() => EmailAddressScreen());
                               },
                               style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(HexColor.fromHex("246CFE")),
+                                  backgroundColor: MaterialStateProperty.all(context.palette.accent),
                                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(50.0),
-                                      side: BorderSide(color: HexColor.fromHex("246CFE"))))),
+                                      side: BorderSide(color: context.palette.accent)))),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.email, color: Colors.white),
-                                  Text('   Continue with Email',
-                                      style: GoogleFonts.lato(fontSize: 20, color: Colors.white)),
+                                  Icon(Icons.email, color: context.palette.textPrimary),
+                                  Text(l.authContinueWithEmail,
+                                      style: GoogleFonts.lato(fontSize: 20, color: context.palette.textPrimary)),
                                 ],
                               )),
                         ),
@@ -114,9 +116,9 @@ class _OnboardingCarouselState extends State<OnboardingCarousel> {
                         ]),
                         Padding(
                           padding: const EdgeInsets.all(10.0),
-                          child: Text('By continuing you agree Taskez\'s Terms of Services & Privacy Policy.',
+                          child: Text(l.onboardingTermsNotice,
                               textAlign: TextAlign.center,
-                              style: GoogleFonts.lato(fontSize: 15, color: HexColor.fromHex("666A7A"))),
+                              style: GoogleFonts.lato(fontSize: 15, color: context.palette.textMuted)),
                         )
                       ]),
                     ),

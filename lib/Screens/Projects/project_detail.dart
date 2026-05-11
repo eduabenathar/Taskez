@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/BottomSheets/bottom_sheets.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Buttons/primary_tab_buttons.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Projects/layout_list_tile.dart';
@@ -21,11 +22,12 @@ class ProjectDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       body: Stack(
         children: [
           DarkRadialBackground(
-            color: HexColor.fromHex("#181a1f"),
+            color: context.palette.surface,
             position: "topLeft",
           ),
           Padding(
@@ -43,13 +45,15 @@ class ProjectDetails extends StatelessWidget {
                 AppSpaces.verticalSpace20,
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   //tab indicators
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      PrimaryTabButton(buttonText: "All Tasks", itemIndex: 0, notifier: _settingsButtonTrigger),
-                      PrimaryTabButton(buttonText: "Recent", itemIndex: 1, notifier: _settingsButtonTrigger),
-                      PrimaryTabButton(buttonText: "Starred", itemIndex: 2, notifier: _settingsButtonTrigger)
-                    ],
+                  Flexible(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        PrimaryTabButton(buttonText: l.projectDetailAllTasks, itemIndex: 0, notifier: _settingsButtonTrigger),
+                        PrimaryTabButton(buttonText: l.projectsRecentTab, itemIndex: 1, notifier: _settingsButtonTrigger),
+                        PrimaryTabButton(buttonText: l.projectDetailStarred, itemIndex: 2, notifier: _settingsButtonTrigger)
+                      ],
+                    ),
                   ),
 
                   Container(
@@ -76,7 +80,7 @@ class ProjectDetails extends StatelessWidget {
                             style: GoogleFonts.lato(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
-                              color: HexColor.fromHex("616575"),
+                              color: context.palette.textMuted,
                             )),
                         children: [
                           ProjectTaskCard(
@@ -108,7 +112,7 @@ class ProjectDetails extends StatelessWidget {
                             style: GoogleFonts.lato(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
-                              color: HexColor.fromHex("616575"),
+                              color: context.palette.textMuted,
                             )),
                         children: [
                           ProjectTaskCard(
@@ -144,9 +148,10 @@ class ProjectDetails extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final l = AppLocalizations.of(context);
         return SimpleDialog(
           insetPadding: EdgeInsets.only(bottom: 500),
-          backgroundColor: HexColor.fromHex("262A34"),
+          backgroundColor: context.palette.background,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
           ),
@@ -155,14 +160,14 @@ class ProjectDetails extends StatelessWidget {
               notifier: _layoutButtonTrigger,
               index: 0,
               icon: Icons.checklist,
-              title: 'List',
+              title: l.projectDetailLayoutList,
             ),
-            Divider(height: 1, color: HexColor.fromHex("353742")),
+            Divider(height: 1, color: context.palette.divider),
             LayoutListTile(
               notifier: _layoutButtonTrigger,
               index: 1,
               icon: Icons.dashboard,
-              title: 'Board',
+              title: l.projectDetailLayoutBoard,
             ),
           ],
           /* ... */

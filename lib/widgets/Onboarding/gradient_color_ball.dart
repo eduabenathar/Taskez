@@ -31,7 +31,7 @@ class GradientColorBall extends StatelessWidget {
                   border: (selectIndex == valueChanger.value)
                       ? Border.all(color: HexColor.fromHex("266FFE"), width: 2)
                       : Border.all(
-                          width: 0, color: HexColor.fromHex("181A1F"))),
+                          width: 0, color: context.palette.surface)),
               child: Center(
                 child: Container(
                     width: 20,

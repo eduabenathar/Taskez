@@ -11,13 +11,14 @@ class RoundedBorderWithIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Container(
         width: width ?? 30,
         height: height ?? 30,
         alignment: Alignment.centerLeft,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.0),
-            border: Border.all(width: 3, color: HexColor.fromHex("31333D"))),
-        child: Center(child: Icon(icon, size: 20, color: Colors.white)));
+            border: Border.all(width: 3, color: palette.divider)),
+        child: Center(child: Icon(icon, size: 20, color: palette.iconPrimary)));
   }
 }

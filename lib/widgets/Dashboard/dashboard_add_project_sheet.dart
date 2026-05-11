@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/BottomSheets/bottom_sheets.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/BottomSheets/bottom_sheet_holder.dart';
 import 'package:taskez/widgets/Buttons/rect_primary_button.dart';
 import 'package:taskez/widgets/Chat/badged_title.dart';
@@ -16,6 +17,7 @@ class DashboardAddProjectSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final _settingsButtonTrigger = ValueNotifier(0);
     final _projectNameController = new TextEditingController();
 
@@ -46,7 +48,7 @@ class DashboardAddProjectSheet extends StatelessWidget {
                   AppSpaces.horizontalSpace20,
                   Expanded(
                     child: UnlabelledFormInput(
-                      placeholder: "Project Name ....",
+                      placeholder: l.createProjectProjectNamePlaceholder,
                       autofocus: true,
                       keyboardType: "text",
                       controller: _projectNameController,
@@ -56,7 +58,7 @@ class DashboardAddProjectSheet extends StatelessWidget {
                 ],
               ),
               AppSpaces.verticalSpace20,
-              InBottomSheetSubtitle(title: "SELECT LAYOUT"),
+              InBottomSheetSubtitle(title: l.createProjectSelectLayout),
               AppSpaces.verticalSpace10,
               Container(
                   width: double.infinity,
@@ -64,12 +66,12 @@ class DashboardAddProjectSheet extends StatelessWidget {
                   padding: EdgeInsets.all(5.0),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: HexColor.fromHex("181A1F")),
+                      color: context.palette.surface),
                   child: Row(children: [
                     Expanded(
                       flex: 1,
                       child: RectPrimaryButtonWithIcon(
-                          buttonText: "List",
+                          buttonText: l.projectDetailLayoutList,
                           icon: Icons.checklist,
                           itemIndex: 0,
                           notifier: _settingsButtonTrigger),
@@ -77,7 +79,7 @@ class DashboardAddProjectSheet extends StatelessWidget {
                     Expanded(
                       flex: 1,
                       child: RectPrimaryButtonWithIcon(
-                          buttonText: "Board",
+                          buttonText: l.projectDetailLayoutBoard,
                           icon: Icons.checklist,
                           itemIndex: 1,
                           notifier: _settingsButtonTrigger),
@@ -91,7 +93,7 @@ class DashboardAddProjectSheet extends StatelessWidget {
                   number: '6',
                 ),
                 IconButton(
-                  icon: Icon(Icons.edit, size: 20, color: Colors.white),
+                  icon: Icon(Icons.edit, size: 20, color: context.palette.textPrimary),
                   onPressed: () {},
                 )
               ]),
@@ -99,21 +101,21 @@ class DashboardAddProjectSheet extends StatelessWidget {
               Transform.scale(
                   scale: 0.8,
                   alignment: Alignment.centerLeft,
-                  child: buildStackedImages(numberOfMembers: "2")),
+                  child: buildStackedImages(context: context, numberOfMembers: "2")),
               AppSpaces.verticalSpace20,
-              InBottomSheetSubtitle(title: "PRIVACY"),
+              InBottomSheetSubtitle(title: l.createProjectPrivacy),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Row(
                   children: [
-                    Text("Public to Design Team  ",
+                    Text(l.createProjectPublicToDesignTeam,
                         style: GoogleFonts.lato(
-                            color: Colors.white, fontWeight: FontWeight.w700)),
-                    Icon(Icons.expand_more, color: Colors.white),
+                            color: context.palette.textPrimary, fontWeight: FontWeight.w700)),
+                    Icon(Icons.expand_more, color: context.palette.textPrimary),
                   ],
                 ),
                 AddSubIcon(
                   scale: 0.8,
-                  color: AppColors.primaryAccentColor,
+                  color: context.palette.accent,
                   callback: _addMeeting,
                 ),
               ]),

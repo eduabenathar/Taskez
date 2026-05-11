@@ -6,6 +6,7 @@ import 'package:taskez/BottomSheets/bottom_sheets.dart';
 import 'package:taskez/Data/data_model.dart';
 import 'package:taskez/Screens/Chat/messaging_screen.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Chat/post_bottom_widget.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Dashboard/in_bottomsheet_subtitle.dart';
@@ -21,6 +22,7 @@ class CreateProjectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final dynamic notificationData = AppData.notificationMentions;
 
     List<Widget> notificationCards = List.generate(
@@ -48,7 +50,7 @@ class CreateProjectScreen extends StatelessWidget {
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: context.palette.surface,
         position: "topLeft",
       ),
 
@@ -63,7 +65,7 @@ class CreateProjectScreen extends StatelessWidget {
                 Text("Onboarding\n Screens",
                     style: GoogleFonts.lato(
                         fontSize: 40,
-                        color: Colors.white,
+                        color: context.palette.textPrimary,
                         fontWeight: FontWeight.bold)),
                 AppSpaces.verticalSpace20,
                 Column(
@@ -82,16 +84,16 @@ class CreateProjectScreen extends StatelessWidget {
                                     image: "assets/man-head.png"),
                                 AppSpaces.horizontalSpace10,
                                 CircularCardLabel(
-                                  label: 'Assigned to',
+                                  label: l.createProjectAssignedTo,
                                   value: 'Dereck Boyle',
-                                  color: Colors.white,
+                                  color: context.palette.textPrimary,
                                 )
                               ]),
                           SheetGoToCalendarWidget(
-                            cardBackgroundColor: AppColors.primaryAccentColor,
+                            cardBackgroundColor: context.palette.accent,
                             textAccentColor: HexColor.fromHex("E89EE9"),
                             value: 'Nov 10',
-                            label: 'Due Date',
+                            label: l.taskDueDate,
                           ),
                         ]),
                     AppSpaces.verticalSpace20,
@@ -105,13 +107,13 @@ class CreateProjectScreen extends StatelessWidget {
                             children: [
                               Text("Unity Dashboard",
                                   style: GoogleFonts.lato(
-                                      color: Colors.white,
+                                      color: context.palette.textPrimary,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600)),
                               SizedBox(height: 5),
                               Text("Task List",
                                   style: GoogleFonts.lato(
-                                      color: HexColor.fromHex("626677"))),
+                                      color: context.palette.textMuted)),
                             ])
                       ],
                     ),
@@ -119,19 +121,19 @@ class CreateProjectScreen extends StatelessWidget {
                 ),
                 AppSpaces.verticalSpace40,
                 InBottomSheetSubtitle(
-                  title: "Description",
-                  textStyle: GoogleFonts.lato(color: Colors.white),
+                  title: l.createProjectDescription,
+                  textStyle: GoogleFonts.lato(color: context.palette.textPrimary),
                 ),
                 AppSpaces.verticalSpace10,
                 InBottomSheetSubtitle(
                     title: "4.648 curated design resources to energize your",
                     textStyle: GoogleFonts.lato(
-                        fontSize: 15, color: HexColor.fromHex("626777"))),
+                        fontSize: 15, color: context.palette.textMuted)),
                 AppSpaces.verticalSpace10,
                 InBottomSheetSubtitle(
                     title: "creative workflow.",
                     textStyle: GoogleFonts.lato(
-                        fontSize: 15, color: HexColor.fromHex("626777"))),
+                        fontSize: 15, color: context.palette.textMuted)),
                 AppSpaces.verticalSpace40,
                 ProjectSelectableContainer(
                   activated: false,
@@ -178,28 +180,28 @@ class CreateProjectScreen extends StatelessWidget {
                                 children: [
                               IconButton(
                                 icon: Icon(Icons.done),
-                                color: Colors.white,
+                                color: context.palette.textPrimary,
                                 iconSize: 30,
                                 onPressed: () {},
                               ),
                               AppSpaces.horizontalSpace10,
                               IconButton(
                                 icon: Icon(Icons.dns_outlined),
-                                color: Colors.white,
+                                color: context.palette.textPrimary,
                                 iconSize: 30,
                                 onPressed: () {},
                               ),
                               AppSpaces.horizontalSpace10,
                               IconButton(
                                 icon: Icon(Icons.thumb_up_outlined),
-                                color: Colors.white,
+                                color: context.palette.textPrimary,
                                 iconSize: 30,
                                 onPressed: () {},
                               ),
                               AppSpaces.horizontalSpace10,
                               IconButton(
                                 icon: Icon(Icons.more_horiz),
-                                color: Colors.white,
+                                color: context.palette.textPrimary,
                                 iconSize: 30,
                                 onPressed: () {
                                   showSettingsBottomSheet();
@@ -214,7 +216,7 @@ class CreateProjectScreen extends StatelessWidget {
         ),
       ),
       //last widget
-      PostBottomWidget(label: "Post your comments...")
+      PostBottomWidget(label: l.createProjectCommentPlaceholder)
     ]));
   }
 }

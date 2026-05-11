@@ -18,23 +18,23 @@ class SelectionTab extends StatelessWidget {
               style: GoogleFonts.lato(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                color: HexColor.fromHex("616575"),
+                color: context.palette.textMuted,
               )),
           InkWell(
             onTap: () {
               Get.to(() => page!);
             },
             child: CircularBorder(
-                color: HexColor.fromHex("616575"),
+                color: context.palette.textMuted,
                 width: 1,
                 size: 20,
-                icon: Icon(Icons.add, size: 15, color: HexColor.fromHex("616575"))),
+                icon: Icon(Icons.add, size: 15, color: context.palette.textMuted)),
           ),
         ]),
         AppSpaces.verticalSpace20,
         Divider(
           height: 2,
-          color: HexColor.fromHex("616575"),
+          color: context.palette.textMuted,
         ),
       ]),
     );

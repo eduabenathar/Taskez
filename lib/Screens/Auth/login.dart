@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:taskez/Screens/Auth/new_workspace.dart';
+import 'package:taskez/Screens/Dashboard/timeline.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Forms/form_input_with%20_label.dart';
 import 'package:taskez/widgets/Navigation/back.dart';
@@ -21,10 +22,12 @@ class _LoginState extends State<Login> {
   bool obscureText = false;
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l = AppLocalizations.of(context);
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: palette.surface,
         position: "topLeft",
       ),
       Padding(
@@ -35,35 +38,35 @@ class _LoginState extends State<Login> {
           children: [
             NavigationBack(),
             SizedBox(height: 40),
-            Text('Login', style: GoogleFonts.lato(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold)),
+            Text(l.loginTitle, style: GoogleFonts.lato(color: palette.textPrimary, fontSize: 40, fontWeight: FontWeight.bold)),
             AppSpaces.verticalSpace20,
             RichText(
               text: TextSpan(
-                text: 'Using  ',
-                style: GoogleFonts.lato(color: HexColor.fromHex("676979")),
+                text: l.loginUsingPrefix,
+                style: GoogleFonts.lato(color: palette.textMuted),
                 children: <TextSpan>[
-                  TextSpan(text: widget.email, style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
-                  TextSpan(text: "  to login.", style: GoogleFonts.lato(color: HexColor.fromHex("676979"))),
+                  TextSpan(text: widget.email, style: TextStyle(color: palette.textSecondary, fontWeight: FontWeight.bold)),
+                  TextSpan(text: l.loginUsingSuffix, style: GoogleFonts.lato(color: palette.textMuted)),
                 ],
               ),
             ),
             SizedBox(height: 30),
             LabelledFormInput(
-                placeholder: "Password",
+                placeholder: l.authPasswordPlaceholder,
                 keyboardType: "text",
                 controller: _passController,
                 obscureText: obscureText,
-                label: "Your Password"),
+                label: l.authPasswordLabel),
             SizedBox(height: 40),
             Container(
               width: double.infinity,
               height: 60,
               child: ElevatedButton(
                   onPressed: () {
-                    Get.to(() => NewWorkSpace());
+                    Get.to(() => Timeline());
                   },
-                  style: ButtonStyles.blueRounded,
-                  child: Text('Sign In', style: GoogleFonts.lato(fontSize: 20, color: Colors.white))),
+                  style: ButtonStyles.blueRounded(context),
+                  child: Text(l.loginSignInButton, style: GoogleFonts.lato(fontSize: 20, color: palette.textInverse))),
             )
           ],
         )),

@@ -30,22 +30,24 @@ class ProjectDetailAppBar extends StatelessWidget {
               AppSpaces.horizontalSpace20,
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(projectName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.lato(
-                        color: Colors.white,
+                        color: context.palette.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.w600)),
                 SizedBox(height: 5),
                 Text(category,
-                    style: GoogleFonts.lato(color: HexColor.fromHex("626677"))),
+                    style: GoogleFonts.lato(color: context.palette.textMuted)),
               ])
             ],
           ),
           Row(children: [
-            Icon(FeatherIcons.star, color: Colors.white, size: 30),
+            Icon(FeatherIcons.star, color: context.palette.textPrimary, size: 30),
             AppSpaces.horizontalSpace20,
             InkWell(
                 onTap: iconTapped,
-                child: Icon(Icons.more_horiz, color: Colors.white, size: 30))
+                child: Icon(Icons.more_horiz, color: context.palette.textPrimary, size: 30))
           ])
         ]);
   }

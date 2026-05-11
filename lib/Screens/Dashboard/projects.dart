@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:taskez/Data/data_model.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Buttons/primary_tab_buttons.dart';
 import 'package:taskez/widgets/Chat/add_chat_icon.dart';
 import 'package:taskez/widgets/Navigation/app_header.dart';
@@ -13,6 +14,7 @@ class ProjectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final _settingsButtonTrigger = ValueNotifier(0);
     final _switchGridLayout = ValueNotifier(false);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -20,7 +22,7 @@ class ProjectScreen extends StatelessWidget {
         padding: const EdgeInsets.only(right: 20, left: 20),
         child: SafeArea(
           child: TaskezAppHeader(
-            title: "Projects",
+            title: l.projectsTitle,
             widget: AppAddIcon(scale: 1.0),
           ),
         ),
@@ -35,15 +37,15 @@ class ProjectScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               PrimaryTabButton(
-                  buttonText: "Favorites",
+                  buttonText: l.projectsFavoritesTab,
                   itemIndex: 0,
                   notifier: _settingsButtonTrigger),
               PrimaryTabButton(
-                  buttonText: "Recent",
+                  buttonText: l.projectsRecentTab,
                   itemIndex: 1,
                   notifier: _settingsButtonTrigger),
               PrimaryTabButton(
-                  buttonText: "All",
+                  buttonText: l.commonAll,
                   itemIndex: 2,
                   notifier: _settingsButtonTrigger)
             ],
@@ -60,9 +62,9 @@ class ProjectScreen extends StatelessWidget {
                       builder: (BuildContext context, _, __) {
                         return _switchGridLayout.value
                             ? Icon(FeatherIcons.clipboard,
-                                color: Colors.white, size: 30)
+                                color: context.palette.textPrimary, size: 30)
                             : Icon(FeatherIcons.grid,
-                                color: Colors.white, size: 30);
+                                color: context.palette.textPrimary, size: 30);
                       })))
         ]),
       ),
@@ -77,6 +79,7 @@ class ProjectScreen extends StatelessWidget {
               valueListenable: _switchGridLayout,
               builder: (BuildContext context, _, __) {
                 return GridView.builder(
+                  padding: const EdgeInsets.only(bottom: 96),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     //change
                     crossAxisCount: _switchGridLayout.value ? 2 : 1,

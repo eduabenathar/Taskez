@@ -25,7 +25,7 @@ class OverviewTaskContainer extends StatelessWidget {
           padding: EdgeInsets.all(8),
           height: 80,
           decoration: BoxDecoration(
-              color: AppColors.primaryBackgroundColor,
+              color: context.palette.background,
               borderRadius: BorderRadius.circular(20.0)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -39,7 +39,7 @@ class OverviewTaskContainer extends StatelessWidget {
                   AppSpaces.horizontalSpace20,
                   Text(cardTitle,
                       style: GoogleFonts.lato(
-                          color: Colors.white,
+                          color: context.palette.textPrimary,
                           fontWeight: FontWeight.w600,
                           fontSize: 20))
                 ],
@@ -51,7 +51,7 @@ class OverviewTaskContainer extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         fontSize: 20)),
                 AppSpaces.horizontalSpace20,
-                Icon(Icons.chevron_right, color: Colors.white, size: 30)
+                Icon(Icons.chevron_right, color: context.palette.textPrimary, size: 30)
               ])
             ],
           )),

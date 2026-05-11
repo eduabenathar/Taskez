@@ -4,7 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Screens/Profile/my_profile.dart';
 import 'package:taskez/Screens/Profile/my_team.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Buttons/primary_progress_button.dart';
+import 'package:taskez/widgets/Dashboard/daily_goal_card.dart';
+import 'package:taskez/widgets/Dashboard/productivity_chart.dart';
+import 'package:taskez/widgets/Profile/language_selector.dart';
 import 'package:taskez/widgets/Buttons/progress_card_close_button.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Profile/badged_container.dart';
@@ -19,10 +23,11 @@ class ProfileOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: context.palette.surface,
         position: "topLeft",
       ),
       Padding(
@@ -42,7 +47,7 @@ class ProfileOverview extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Text("Blake Gordon",
                   style: GoogleFonts.lato(
-                      color: Colors.white,
+                      color: context.palette.textPrimary,
                       fontSize: 40,
                       fontWeight: FontWeight.bold)),
             ),
@@ -53,21 +58,21 @@ class ProfileOverview extends StatelessWidget {
               padding: const EdgeInsets.all(15.0),
               child: OutlinedButtonWithText(
                 width: 150,
-                content: "View Profile",
+                content: l.profileViewProfile,
                 onPressed: () {
                   Get.to(() => ProfilePage());
                 },
               ),
             ),
             AppSpaces.verticalSpace20,
-            ContainerLabel(label: "Workspace"),
+            ContainerLabel(label: l.profileWorkspace),
             AppSpaces.verticalSpace10,
             Container(
               width: double.infinity,
               height: 90,
               padding: EdgeInsets.all(20.0),
               decoration: BoxDecoration(
-                  color: AppColors.primaryBackgroundColor,
+                  color: context.palette.background,
                   borderRadius: BorderRadius.circular(10)),
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -86,44 +91,44 @@ class ProfileOverview extends StatelessWidget {
                               children: [
                                 Text("UI8 Design",
                                     style: GoogleFonts.lato(
-                                        color: Colors.white,
+                                        color: context.palette.textPrimary,
                                         fontSize: 17,
                                         fontWeight: FontWeight.bold)),
                                 SizedBox(height: 5),
                                 Text("hello@ui8.net",
                                     style: GoogleFonts.lato(
                                         fontWeight: FontWeight.bold,
-                                        color: HexColor.fromHex("5E6272")))
+                                        color: context.palette.textMuted))
                               ])
                         ]),
                     PrimaryProgressButton(
                       width: 90,
                       height: 40,
-                      label: "Invite",
+                      label: l.profileInvite,
                       textStyle: GoogleFonts.lato(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                          color: context.palette.textPrimary, fontWeight: FontWeight.bold),
                     )
                   ]),
             ),
             AppSpaces.verticalSpace20,
-            ContainerLabel(label: "Notification"),
+            ContainerLabel(label: l.profileNotification),
             AppSpaces.verticalSpace10,
             BadgedContainer(
-              label: "Do not disturb",
+              label: l.profileDoNotDisturb,
               callback: () {
                 Get.to(() => ProfileNotificationSettings());
               },
-              value: "Off",
+              value: l.profileOff,
               badgeColor: "FDA5FF",
             ),
             AppSpaces.verticalSpace20,
-            ContainerLabel(label: "Manage"),
+            ContainerLabel(label: l.profileManage),
             AppSpaces.verticalSpace10,
             Row(children: [
               Expanded(
                 flex: 1,
                 child: BadgedContainer(
-                  label: "Team",
+                  label: l.profileTeam,
                   value: "8",
                   badgeColor: "FDA5FF",
                   callback: () {
@@ -135,12 +140,20 @@ class ProfileOverview extends StatelessWidget {
               Expanded(
                 flex: 1,
                 child: BadgedContainer(
-                  label: "Labels",
+                  label: l.profileLabels,
                   value: "12",
                   badgeColor: "FFDE72",
                 ),
               )
             ]),
+            AppSpaces.verticalSpace20,
+            const LanguageSelector(),
+            AppSpaces.verticalSpace20,
+            ContainerLabel(label: l.dashboardProductivityTab),
+            AppSpaces.verticalSpace10,
+            DailyGoalCard(),
+            AppSpaces.verticalSpace20,
+            ProductivityChart(),
             AppSpaces.verticalSpace20,
             Container(
                 width: double.infinity,
@@ -149,9 +162,9 @@ class ProfileOverview extends StatelessWidget {
                     color: HexColor.fromHex("FF968E"),
                     borderRadius: BorderRadius.circular(10)),
                 child: Center(
-                  child: Text("Log Out",
+                  child: Text(l.profileLogOut,
                       style: GoogleFonts.lato(
-                          color: Colors.white,
+                          color: context.palette.textPrimary,
                           fontSize: 16,
                           fontWeight: FontWeight.bold)),
                 ))

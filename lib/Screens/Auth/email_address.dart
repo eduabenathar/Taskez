@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'dart:math' as math;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Forms/form_input_with%20_label.dart';
 import 'package:taskez/widgets/Navigation/back.dart';
@@ -20,31 +21,32 @@ class _EmailAddressScreenState extends State<EmailAddressScreen> {
   bool obscureText = false;
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
         body: Stack(children: [
       DarkRadialBackground(
-        color: HexColor.fromHex("#181a1f"),
+        color: context.palette.surface,
         position: "topLeft",
       ),
       Positioned(
           top: Utils.screenHeight / 2,
           left: Utils.screenWidth,
-          child: Transform.rotate(angle: -math.pi / 2, child: CustomPaint(painter: BackgroundHexagon()))),
+          child: Transform.rotate(angle: -math.pi / 2, child: CustomPaint(painter: BackgroundHexagon(color: context.palette.background)))),
       Padding(
         padding: EdgeInsets.all(20.0),
         child: SafeArea(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           NavigationBack(),
           SizedBox(height: 40),
-          Text("What's your\nemail\naddress?",
-              style: GoogleFonts.lato(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold)),
+          Text(l.emailAddressTitle,
+              style: GoogleFonts.lato(color: context.palette.textPrimary, fontSize: 40, fontWeight: FontWeight.bold)),
           AppSpaces.verticalSpace20,
           LabelledFormInput(
-              placeholder: "Email",
+              placeholder: l.authEmailPlaceholder,
               keyboardType: "text",
               controller: _emailController,
               obscureText: obscureText,
-              label: "Your Email"),
+              label: l.authEmailLabel),
           SizedBox(height: 40),
           Container(
             //width: 180,
@@ -53,12 +55,12 @@ class _EmailAddressScreenState extends State<EmailAddressScreen> {
                 onPressed: () {
                   Get.to(() => SignUp(email: _emailController.text));
                 },
-                style: ButtonStyles.blueRounded,
+                style: ButtonStyles.blueRounded(context),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.email, color: Colors.white),
-                    Text('   Continue with Email', style: GoogleFonts.lato(fontSize: 20, color: Colors.white)),
+                    Icon(Icons.email, color: context.palette.textInverse),
+                    Text(l.authContinueWithEmail, style: GoogleFonts.lato(fontSize: 20, color: context.palette.textInverse)),
                   ],
                 )),
           )

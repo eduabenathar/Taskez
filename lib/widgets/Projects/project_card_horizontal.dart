@@ -33,7 +33,7 @@ class ProjectCardHorizontal extends StatelessWidget {
       },
       child: Container(
           padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(color: HexColor.fromHex("20222A"), borderRadius: BorderRadius.circular(20)),
+          decoration: BoxDecoration(color: context.palette.surface, borderRadius: BorderRadius.circular(20)),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,9 +44,11 @@ class ProjectCardHorizontal extends StatelessWidget {
                     AppSpaces.horizontalSpace20,
                     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(projectName,
-                          style: GoogleFonts.lato(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600)),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.lato(color: context.palette.textPrimary, fontSize: 20, fontWeight: FontWeight.w600)),
                       SizedBox(height: 5),
-                      Text(category, style: GoogleFonts.lato(color: HexColor.fromHex("626677"))),
+                      Text(category, style: GoogleFonts.lato(color: context.palette.textMuted)),
                     ])
                   ]),
                   Container(
@@ -56,14 +58,14 @@ class ProjectCardHorizontal extends StatelessWidget {
                       child: Text("$ratingsUpperNumber/$ratingsLowerNumber",
                           style: GoogleFonts.lato(
                               fontWeight: FontWeight.bold,
-                              color: (category == "Development" ? Colors.black : Colors.white))))
+                              color: (category == "Development" ? Colors.black : Colors.white),)))
                 ]),
             AppSpaces.verticalSpace20,
             Expanded(
               child: Container(
                   width: double.infinity,
                   height: 5,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: HexColor.fromHex("343840")),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: context.palette.divider),
                   child: Row(children: [
                     Expanded(
                         flex: ratingsUpperNumber,

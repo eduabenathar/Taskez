@@ -19,7 +19,7 @@ class AppTextButton extends StatelessWidget {
       onTap: callback,
       child: Text(buttonText,
           style: GoogleFonts.lato(
-              color: HexColor.fromHex("616575"),
+              color: context.palette.textMuted,
               fontSize: buttonSize,
               fontWeight: FontWeight.bold)),
     );
