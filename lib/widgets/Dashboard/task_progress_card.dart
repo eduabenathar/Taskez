@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Constants/constants.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Buttons/progress_card_close_button.dart';
 
 class TaskProgressCard extends StatelessWidget {
@@ -19,6 +20,7 @@ class TaskProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
         height: 165,
         decoration: BoxDecoration(
@@ -52,7 +54,7 @@ class TaskProgressCard extends StatelessWidget {
                       style: GoogleFonts.lato(
                           fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black)),
                   AppSpaces.verticalSpace10,
-                  Text('$rating is completed',
+                  Text(l.taskProgressIsCompleted(rating),
                       style: GoogleFonts.lato(
                           fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black)),
                   SizedBox(

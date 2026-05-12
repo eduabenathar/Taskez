@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:taskez/Screens/Dashboard/search_screen.dart';
 import 'package:taskez/Values/values.dart';
 import 'package:taskez/widgets/dummy/profile_dummy.dart';
 
@@ -45,7 +47,19 @@ class DashboardNav extends StatelessWidget {
             )
           ]),
         ),
-        SizedBox(width: 40),
+        SizedBox(width: 28),
+        InkWell(
+          onTap: () => Get.to(() => Scaffold(
+                backgroundColor: context.palette.surface,
+                body: SearchScreen(),
+              )),
+          borderRadius: BorderRadius.circular(24),
+          child: Padding(
+            padding: EdgeInsets.all(4),
+            child: Icon(FeatherIcons.search, color: context.palette.iconPrimary, size: 28),
+          ),
+        ),
+        SizedBox(width: 28),
         InkWell(
           onTap: onImageTapped,
           child: ProfileDummy(

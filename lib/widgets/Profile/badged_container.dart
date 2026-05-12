@@ -19,7 +19,7 @@ class BadgedContainer extends StatelessWidget {
       child: Container(
         width: double.infinity,
         height: 90,
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(color: palette.surface, borderRadius: BorderRadius.circular(10)),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Container(
@@ -28,8 +28,15 @@ class BadgedContainer extends StatelessWidget {
               decoration: BoxDecoration(color: HexColor.fromHex("A06AFA"), shape: BoxShape.circle),
               child: Icon(Icons.do_not_disturb, color: context.palette.textPrimary, size: 30)),
           AppSpaces.horizontalSpace20,
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(label, style: GoogleFonts.lato(color: palette.textPrimary, fontSize: 17, fontWeight: FontWeight.bold)),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+            Text(label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.lato(color: palette.textPrimary, fontSize: 15, fontWeight: FontWeight.bold)),
             SizedBox(height: 5),
             (value == "Off")
                 ? Text(value, style: GoogleFonts.lato(fontWeight: FontWeight.bold, color: palette.textMuted))
@@ -40,7 +47,8 @@ class BadgedContainer extends StatelessWidget {
                       color: HexColor.fromHex(badgeColor),
                     ),
                     child: Text(value, style: GoogleFonts.lato(fontWeight: FontWeight.bold)))
-          ])
+          ]),
+          )
         ]),
       ),
     );

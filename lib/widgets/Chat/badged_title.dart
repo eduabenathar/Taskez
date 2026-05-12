@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 
 class BadgedTitle extends StatelessWidget {
   final String title;
@@ -26,7 +27,7 @@ class BadgedTitle extends StatelessWidget {
               //color: HexColor.fromHex(color),
               border: Border.all(color: HexColor.fromHex(color), width: 1),
               borderRadius: BorderRadius.circular(50.0)),
-          child: Text("$number members",
+          child: Text(AppLocalizations.of(context).chatMembersCount(number),
               style: GoogleFonts.lato(
                   color: HexColor.fromHex(color),
                   fontWeight: FontWeight.w500,

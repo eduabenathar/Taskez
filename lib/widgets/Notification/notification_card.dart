@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:taskez/Values/values.dart';
+import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/dummy/profile_dummy.dart';
 
 class NotificationCard extends StatelessWidget {
@@ -28,12 +29,13 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
         width: double.infinity,
         padding: EdgeInsets.only(top: 10),
         height: 160,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('$userName mentioned you in $mention',
+          Text(l.notificationMentionedIn(userName, mention),
               style: GoogleFonts.lato(
                   color: HexColor.fromHex("666A7B"),
                   fontWeight: FontWeight.w500)),
@@ -92,7 +94,7 @@ class NotificationCard extends StatelessWidget {
                         mentioned
                             ? RichText(
                                 text: TextSpan(
-                                  text: 'Hello ',
+                                  text: l.notificationHello,
                                   style: GoogleFonts.lato(
                                     fontSize: 16,
                                     color: HexColor.fromHex("666A7B"),
