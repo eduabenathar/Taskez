@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:taskez/Data/data_model.dart';
 import 'package:taskez/l10n/app_localizations.dart';
 import 'package:taskez/widgets/Dashboard/_dashboard_card_palette.dart';
 
@@ -13,6 +14,10 @@ class AllTaskCard extends StatelessWidget {
   final List<String> avatarAssets;
   final int extraAvatars;
   final int commentsCount;
+  final TaskPriority priority;
+  final IconData icon;
+  final double? width;
+  final VoidCallback? onTap;
 
   const AllTaskCard({
     Key? key,
@@ -24,6 +29,10 @@ class AllTaskCard extends StatelessWidget {
     required this.avatarAssets,
     this.extraAvatars = 0,
     required this.commentsCount,
+    this.priority = TaskPriority.medium,
+    this.icon = Icons.work_outline_rounded,
+    this.width,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -31,139 +40,187 @@ class AllTaskCard extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final p = DashboardCardPalette.of(context);
     final progress = tasksTotal == 0 ? 0.0 : tasksDone / tasksTotal;
+    final priorityStyle = _priorityStyle(l, p, priority);
 
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: p.cardBackground,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: p.cardBorder, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: p.cardShadow,
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              _Pill(
-                label: l.priorityMedium,
-                background: p.amberSoft,
-                foreground: p.amber,
-              ),
-              const SizedBox(width: 8),
-              _Pill(
-                label: date,
-                background: p.accentSoft,
-                foreground: p.accent,
-                leading:
-                    Icon(FeatherIcons.calendar, size: 14, color: p.accent),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: Container(
+          width: width,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: p.cardBackground,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: p.cardBorder, width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: p.cardShadow,
+                blurRadius: 14,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
-          const SizedBox(height: 14),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(FeatherIcons.briefcase, color: p.accent, size: 26),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.lato(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: p.titleText,
-                    height: 1.2,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            description,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.lato(
-              fontSize: 14,
-              color: p.bodyText,
-              height: 1.35,
-            ),
-          ),
-          const SizedBox(height: 14),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                l.progressLabel,
-                style: GoogleFonts.lato(
-                  fontSize: 13,
-                  color: p.titleText,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Text(
-                l.projectTasksProgress(tasksDone, tasksTotal),
-                style: GoogleFonts.lato(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: p.accent,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: LinearProgressIndicator(
-              value: progress,
-              minHeight: 6,
-              backgroundColor: p.progressTrack,
-              valueColor: AlwaysStoppedAnimation<Color>(p.accent),
-            ),
-          ),
-          const SizedBox(height: 14),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _AvatarStackWithOverflow(
-                assets: avatarAssets,
-                extra: extraAvatars,
-                accent: p.accent,
-                ringColor: p.cardBackground,
-                overflowText: p.cardBackground,
-              ),
               Row(
                 children: [
-                  Icon(FeatherIcons.messageCircle,
-                      size: 20, color: p.primaryIcon),
-                  const SizedBox(width: 4),
-                  Text(
-                    '$commentsCount',
-                    style: GoogleFonts.lato(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: p.primaryIcon,
+                  _Pill(
+                    label: priorityStyle.label,
+                    background: priorityStyle.background,
+                    foreground: priorityStyle.foreground,
+                  ),
+                  const SizedBox(width: 8),
+                  _Pill(
+                    label: date,
+                    background: p.accentSoft,
+                    foreground: p.accent,
+                    leading:
+                        Icon(FeatherIcons.calendar, size: 14, color: p.accent),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(icon, color: p.accent, size: 28),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.lato(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: p.titleText,
+                        height: 1.2,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 14),
-                  Icon(FeatherIcons.share2, size: 20, color: p.primaryIcon),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                description,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.lato(
+                  fontSize: 14,
+                  color: p.bodyText,
+                  height: 1.35,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l.progressLabel,
+                    style: GoogleFonts.lato(
+                      fontSize: 13,
+                      color: p.titleText,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    l.projectTasksProgress(tasksDone, tasksTotal),
+                    style: GoogleFonts.lato(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: p.accent,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 6,
+                  backgroundColor: p.progressTrack,
+                  valueColor: AlwaysStoppedAnimation<Color>(p.accent),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _AvatarStackWithOverflow(
+                    assets: avatarAssets,
+                    extra: extraAvatars,
+                    accent: p.accent,
+                    ringColor: p.cardBackground,
+                    overflowText: p.cardBackground,
+                  ),
+                  Row(
+                    children: [
+                      Icon(FeatherIcons.messageCircle,
+                          size: 20, color: p.primaryIcon),
+                      const SizedBox(width: 4),
+                      Text(
+                        '$commentsCount',
+                        style: GoogleFonts.lato(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: p.primaryIcon,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Icon(FeatherIcons.share2, size: 20, color: p.primaryIcon),
+                    ],
+                  ),
                 ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
+
+  _PriorityCardStyle _priorityStyle(
+    AppLocalizations l,
+    DashboardCardPalette p,
+    TaskPriority priority,
+  ) {
+    switch (priority) {
+      case TaskPriority.high:
+        return _PriorityCardStyle(
+          label: l.priorityHigh,
+          background: p.dangerSoft,
+          foreground: p.danger,
+        );
+      case TaskPriority.medium:
+        return _PriorityCardStyle(
+          label: l.priorityMedium,
+          background: p.amberSoft,
+          foreground: p.amber,
+        );
+      case TaskPriority.low:
+        return _PriorityCardStyle(
+          label: l.taskDetailPriorityLow,
+          background: p.accentSoft,
+          foreground: p.accent,
+        );
+    }
+  }
+}
+
+class _PriorityCardStyle {
+  final String label;
+  final Color background;
+  final Color foreground;
+
+  const _PriorityCardStyle({
+    required this.label,
+    required this.background,
+    required this.foreground,
+  });
 }
 
 class _Pill extends StatelessWidget {
