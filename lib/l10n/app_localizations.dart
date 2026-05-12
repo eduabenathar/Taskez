@@ -1195,6 +1195,384 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All Task'**
   String get dailyGoalAllTask;
+
+  /// No description provided for @calendarNewEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'New event'**
+  String get calendarNewEvent;
+
+  /// No description provided for @calendarEditEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit event'**
+  String get calendarEditEvent;
+
+  /// No description provided for @calendarFieldTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get calendarFieldTitle;
+
+  /// No description provided for @calendarFieldLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get calendarFieldLocation;
+
+  /// No description provided for @calendarFieldDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get calendarFieldDate;
+
+  /// No description provided for @calendarFieldStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get calendarFieldStart;
+
+  /// No description provided for @calendarFieldDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get calendarFieldDuration;
+
+  /// No description provided for @calendarFieldColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get calendarFieldColor;
+
+  /// No description provided for @calendarTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get calendarTitleRequired;
+
+  /// No description provided for @calendarDurationMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m'**
+  String calendarDurationMinutes(int minutes);
+
+  /// No description provided for @calendarViewDots.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get calendarViewDots;
+
+  /// No description provided for @calendarViewHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get calendarViewHours;
+
+  /// No description provided for @calendarNoMoreTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'No more tasks today'**
+  String get calendarNoMoreTasks;
+
+  /// No description provided for @taskDetailStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get taskDetailStartDate;
+
+  /// No description provided for @taskDetailDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due date'**
+  String get taskDetailDueDate;
+
+  /// No description provided for @taskDetailDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get taskDetailDescription;
+
+  /// No description provided for @taskDetailTeamMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Team Member'**
+  String get taskDetailTeamMember;
+
+  /// No description provided for @taskDetailAttachments.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachments'**
+  String get taskDetailAttachments;
+
+  /// No description provided for @taskDetailTaskDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Task Detail'**
+  String get taskDetailTaskDetail;
+
+  /// No description provided for @taskDetailPriorityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High priority'**
+  String get taskDetailPriorityHigh;
+
+  /// No description provided for @taskDetailPriorityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium priority'**
+  String get taskDetailPriorityMedium;
+
+  /// No description provided for @taskDetailPriorityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low priority'**
+  String get taskDetailPriorityLow;
+
+  /// No description provided for @taskDetailAddTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Add task'**
+  String get taskDetailAddTask;
+
+  /// No description provided for @taskDetailAddSubtask.
+  ///
+  /// In en, this message translates to:
+  /// **'Add subtask'**
+  String get taskDetailAddSubtask;
+
+  /// No description provided for @taskDetailAddMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Add member'**
+  String get taskDetailAddMember;
+
+  /// No description provided for @taskDetailPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get taskDetailPreview;
+
+  /// No description provided for @taskDetailNewGroupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'New section title'**
+  String get taskDetailNewGroupHint;
+
+  /// No description provided for @taskDetailNewSubtaskHint.
+  ///
+  /// In en, this message translates to:
+  /// **'New subtask'**
+  String get taskDetailNewSubtaskHint;
+
+  /// No description provided for @taskDetailEditDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit description'**
+  String get taskDetailEditDescription;
+
+  /// No description provided for @taskDetailDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the task...'**
+  String get taskDetailDescriptionHint;
+
+  /// No description provided for @taskDetailAddAttachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Add attachment'**
+  String get taskDetailAddAttachment;
+
+  /// No description provided for @taskDetailAttachmentNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'File name'**
+  String get taskDetailAttachmentNameHint;
+
+  /// No description provided for @taskDetailAttachmentImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get taskDetailAttachmentImage;
+
+  /// No description provided for @taskDetailAttachmentDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Document'**
+  String get taskDetailAttachmentDocument;
+
+  /// No description provided for @taskDetailChooseIcon.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an icon'**
+  String get taskDetailChooseIcon;
+
+  /// No description provided for @taskDetailCommentAuthorYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get taskDetailCommentAuthorYou;
+
+  /// No description provided for @taskDetailEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit title'**
+  String get taskDetailEditTitle;
+
+  /// No description provided for @taskDetailEventNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Event name'**
+  String get taskDetailEventNameHint;
+
+  /// No description provided for @taskDetailEditLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit location'**
+  String get taskDetailEditLocation;
+
+  /// No description provided for @taskDetailLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Location, room or link'**
+  String get taskDetailLocationHint;
+
+  /// No description provided for @taskDetailDurationMinutesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min'**
+  String taskDetailDurationMinutesLabel(int count);
+
+  /// No description provided for @taskDetailAttachImageError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not attach image.'**
+  String get taskDetailAttachImageError;
+
+  /// No description provided for @taskDetailAddLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Add location'**
+  String get taskDetailAddLocation;
+
+  /// No description provided for @taskDetailColorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get taskDetailColorLabel;
+
+  /// No description provided for @taskDetailComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments'**
+  String get taskDetailComments;
+
+  /// No description provided for @taskDetailNoComments.
+  ///
+  /// In en, this message translates to:
+  /// **'No comments yet.'**
+  String get taskDetailNoComments;
+
+  /// No description provided for @taskDetailOldCommentsHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} old comments have no saved content.'**
+  String taskDetailOldCommentsHidden(int count);
+
+  /// No description provided for @taskDetailCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a comment'**
+  String get taskDetailCommentHint;
+
+  /// No description provided for @taskDetailRemoveMemberTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove team member?'**
+  String get taskDetailRemoveMemberTitle;
+
+  /// No description provided for @taskDetailAddImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add image'**
+  String get taskDetailAddImage;
+
+  /// No description provided for @taskDetailChooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get taskDetailChooseFromGallery;
+
+  /// No description provided for @taskDetailGallerySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach an existing image'**
+  String get taskDetailGallerySubtitle;
+
+  /// No description provided for @taskDetailOpenCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Open camera'**
+  String get taskDetailOpenCamera;
+
+  /// No description provided for @taskDetailCameraSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo and attach to event'**
+  String get taskDetailCameraSubtitle;
+
+  /// No description provided for @taskDetailPriorityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get taskDetailPriorityLabel;
+
+  /// No description provided for @taskDetailEventColorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Event color'**
+  String get taskDetailEventColorLabel;
+
+  /// No description provided for @taskDetailCommentNow.
+  ///
+  /// In en, this message translates to:
+  /// **'now'**
+  String get taskDetailCommentNow;
+
+  /// No description provided for @taskDetailCommentMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min'**
+  String taskDetailCommentMinutesAgo(int count);
+
+  /// No description provided for @taskDetailCommentHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h'**
+  String taskDetailCommentHoursAgo(int count);
+
+  /// No description provided for @notificationMentionedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'{user} mentioned you in {mention}'**
+  String notificationMentionedIn(String user, String mention);
+
+  /// No description provided for @notificationHello.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello '**
+  String get notificationHello;
+
+  /// No description provided for @chatMembersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} members'**
+  String chatMembersCount(String count);
+
+  /// No description provided for @taskProgressIsCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating} is completed'**
+  String taskProgressIsCompleted(String rating);
 }
 
 class _AppLocalizationsDelegate

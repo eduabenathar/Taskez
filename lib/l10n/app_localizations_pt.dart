@@ -569,4 +569,209 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get dailyGoalAllTask => 'Todas as tarefas';
+
+  @override
+  String get calendarNewEvent => 'Novo evento';
+
+  @override
+  String get calendarEditEvent => 'Editar evento';
+
+  @override
+  String get calendarFieldTitle => 'Título';
+
+  @override
+  String get calendarFieldLocation => 'Local';
+
+  @override
+  String get calendarFieldDate => 'Data';
+
+  @override
+  String get calendarFieldStart => 'Início';
+
+  @override
+  String get calendarFieldDuration => 'Duração';
+
+  @override
+  String get calendarFieldColor => 'Cor';
+
+  @override
+  String get calendarTitleRequired => 'Obrigatório';
+
+  @override
+  String calendarDurationMinutes(int minutes) {
+    return '${minutes}min';
+  }
+
+  @override
+  String get calendarViewDots => 'Timeline';
+
+  @override
+  String get calendarViewHours => 'Data';
+
+  @override
+  String get calendarNoMoreTasks => 'Sem mais tarefas hoje';
+
+  @override
+  String get taskDetailStartDate => 'Início';
+
+  @override
+  String get taskDetailDueDate => 'Entrega';
+
+  @override
+  String get taskDetailDescription => 'Descrição';
+
+  @override
+  String get taskDetailTeamMember => 'Equipe';
+
+  @override
+  String get taskDetailAttachments => 'Anexos';
+
+  @override
+  String get taskDetailTaskDetail => 'Detalhes da tarefa';
+
+  @override
+  String get taskDetailPriorityHigh => 'Alta prioridade';
+
+  @override
+  String get taskDetailPriorityMedium => 'Média prioridade';
+
+  @override
+  String get taskDetailPriorityLow => 'Baixa prioridade';
+
+  @override
+  String get taskDetailAddTask => 'Adicionar tarefa';
+
+  @override
+  String get taskDetailAddSubtask => 'Adicionar subtarefa';
+
+  @override
+  String get taskDetailAddMember => 'Adicionar membro';
+
+  @override
+  String get taskDetailPreview => 'Visualizar';
+
+  @override
+  String get taskDetailNewGroupHint => 'Título da nova seção';
+
+  @override
+  String get taskDetailNewSubtaskHint => 'Nova subtarefa';
+
+  @override
+  String get taskDetailEditDescription => 'Editar descrição';
+
+  @override
+  String get taskDetailDescriptionHint => 'Descreva a tarefa...';
+
+  @override
+  String get taskDetailAddAttachment => 'Adicionar anexo';
+
+  @override
+  String get taskDetailAttachmentNameHint => 'Nome do arquivo';
+
+  @override
+  String get taskDetailAttachmentImage => 'Imagem';
+
+  @override
+  String get taskDetailAttachmentDocument => 'Documento';
+
+  @override
+  String get taskDetailChooseIcon => 'Escolher um ícone';
+
+  @override
+  String get taskDetailCommentAuthorYou => 'Você';
+
+  @override
+  String get taskDetailEditTitle => 'Editar título';
+
+  @override
+  String get taskDetailEventNameHint => 'Nome do evento';
+
+  @override
+  String get taskDetailEditLocation => 'Editar local';
+
+  @override
+  String get taskDetailLocationHint => 'Local, sala ou link';
+
+  @override
+  String taskDetailDurationMinutesLabel(int count) {
+    return '$count min';
+  }
+
+  @override
+  String get taskDetailAttachImageError => 'Não foi possível anexar a imagem.';
+
+  @override
+  String get taskDetailAddLocation => 'Adicionar local';
+
+  @override
+  String get taskDetailColorLabel => 'Cor';
+
+  @override
+  String get taskDetailComments => 'Comentários';
+
+  @override
+  String get taskDetailNoComments => 'Nenhum comentário ainda.';
+
+  @override
+  String taskDetailOldCommentsHidden(int count) {
+    return '$count comentários antigos ainda não têm conteúdo salvo.';
+  }
+
+  @override
+  String get taskDetailCommentHint => 'Escreva um comentário';
+
+  @override
+  String get taskDetailRemoveMemberTitle => 'Remover membro da equipe?';
+
+  @override
+  String get taskDetailAddImage => 'Adicionar imagem';
+
+  @override
+  String get taskDetailChooseFromGallery => 'Escolher da galeria';
+
+  @override
+  String get taskDetailGallerySubtitle => 'Anexar uma imagem existente';
+
+  @override
+  String get taskDetailOpenCamera => 'Abrir câmera';
+
+  @override
+  String get taskDetailCameraSubtitle => 'Fotografar e anexar ao evento';
+
+  @override
+  String get taskDetailPriorityLabel => 'Prioridade';
+
+  @override
+  String get taskDetailEventColorLabel => 'Cor do evento';
+
+  @override
+  String get taskDetailCommentNow => 'agora';
+
+  @override
+  String taskDetailCommentMinutesAgo(int count) {
+    return '$count min';
+  }
+
+  @override
+  String taskDetailCommentHoursAgo(int count) {
+    return '${count}h';
+  }
+
+  @override
+  String notificationMentionedIn(String user, String mention) {
+    return '$user mencionou você em $mention';
+  }
+
+  @override
+  String get notificationHello => 'Olá ';
+
+  @override
+  String chatMembersCount(String count) {
+    return '$count membros';
+  }
+
+  @override
+  String taskProgressIsCompleted(String rating) {
+    return '$rating concluída(s)';
+  }
 }

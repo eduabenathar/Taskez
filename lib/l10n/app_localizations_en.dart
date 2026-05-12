@@ -567,4 +567,209 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dailyGoalAllTask => 'All Task';
+
+  @override
+  String get calendarNewEvent => 'New event';
+
+  @override
+  String get calendarEditEvent => 'Edit event';
+
+  @override
+  String get calendarFieldTitle => 'Title';
+
+  @override
+  String get calendarFieldLocation => 'Location';
+
+  @override
+  String get calendarFieldDate => 'Date';
+
+  @override
+  String get calendarFieldStart => 'Start';
+
+  @override
+  String get calendarFieldDuration => 'Duration';
+
+  @override
+  String get calendarFieldColor => 'Color';
+
+  @override
+  String get calendarTitleRequired => 'Required';
+
+  @override
+  String calendarDurationMinutes(int minutes) {
+    return '${minutes}m';
+  }
+
+  @override
+  String get calendarViewDots => 'Timeline';
+
+  @override
+  String get calendarViewHours => 'Date';
+
+  @override
+  String get calendarNoMoreTasks => 'No more tasks today';
+
+  @override
+  String get taskDetailStartDate => 'Start date';
+
+  @override
+  String get taskDetailDueDate => 'Due date';
+
+  @override
+  String get taskDetailDescription => 'Description';
+
+  @override
+  String get taskDetailTeamMember => 'Team Member';
+
+  @override
+  String get taskDetailAttachments => 'Attachments';
+
+  @override
+  String get taskDetailTaskDetail => 'Task Detail';
+
+  @override
+  String get taskDetailPriorityHigh => 'High priority';
+
+  @override
+  String get taskDetailPriorityMedium => 'Medium priority';
+
+  @override
+  String get taskDetailPriorityLow => 'Low priority';
+
+  @override
+  String get taskDetailAddTask => 'Add task';
+
+  @override
+  String get taskDetailAddSubtask => 'Add subtask';
+
+  @override
+  String get taskDetailAddMember => 'Add member';
+
+  @override
+  String get taskDetailPreview => 'Preview';
+
+  @override
+  String get taskDetailNewGroupHint => 'New section title';
+
+  @override
+  String get taskDetailNewSubtaskHint => 'New subtask';
+
+  @override
+  String get taskDetailEditDescription => 'Edit description';
+
+  @override
+  String get taskDetailDescriptionHint => 'Describe the task...';
+
+  @override
+  String get taskDetailAddAttachment => 'Add attachment';
+
+  @override
+  String get taskDetailAttachmentNameHint => 'File name';
+
+  @override
+  String get taskDetailAttachmentImage => 'Image';
+
+  @override
+  String get taskDetailAttachmentDocument => 'Document';
+
+  @override
+  String get taskDetailChooseIcon => 'Choose an icon';
+
+  @override
+  String get taskDetailCommentAuthorYou => 'You';
+
+  @override
+  String get taskDetailEditTitle => 'Edit title';
+
+  @override
+  String get taskDetailEventNameHint => 'Event name';
+
+  @override
+  String get taskDetailEditLocation => 'Edit location';
+
+  @override
+  String get taskDetailLocationHint => 'Location, room or link';
+
+  @override
+  String taskDetailDurationMinutesLabel(int count) {
+    return '$count min';
+  }
+
+  @override
+  String get taskDetailAttachImageError => 'Could not attach image.';
+
+  @override
+  String get taskDetailAddLocation => 'Add location';
+
+  @override
+  String get taskDetailColorLabel => 'Color';
+
+  @override
+  String get taskDetailComments => 'Comments';
+
+  @override
+  String get taskDetailNoComments => 'No comments yet.';
+
+  @override
+  String taskDetailOldCommentsHidden(int count) {
+    return '$count old comments have no saved content.';
+  }
+
+  @override
+  String get taskDetailCommentHint => 'Write a comment';
+
+  @override
+  String get taskDetailRemoveMemberTitle => 'Remove team member?';
+
+  @override
+  String get taskDetailAddImage => 'Add image';
+
+  @override
+  String get taskDetailChooseFromGallery => 'Choose from gallery';
+
+  @override
+  String get taskDetailGallerySubtitle => 'Attach an existing image';
+
+  @override
+  String get taskDetailOpenCamera => 'Open camera';
+
+  @override
+  String get taskDetailCameraSubtitle => 'Take a photo and attach to event';
+
+  @override
+  String get taskDetailPriorityLabel => 'Priority';
+
+  @override
+  String get taskDetailEventColorLabel => 'Event color';
+
+  @override
+  String get taskDetailCommentNow => 'now';
+
+  @override
+  String taskDetailCommentMinutesAgo(int count) {
+    return '$count min';
+  }
+
+  @override
+  String taskDetailCommentHoursAgo(int count) {
+    return '${count}h';
+  }
+
+  @override
+  String notificationMentionedIn(String user, String mention) {
+    return '$user mentioned you in $mention';
+  }
+
+  @override
+  String get notificationHello => 'Hello ';
+
+  @override
+  String chatMembersCount(String count) {
+    return '$count members';
+  }
+
+  @override
+  String taskProgressIsCompleted(String rating) {
+    return '$rating is completed';
+  }
 }

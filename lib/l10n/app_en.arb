@@ -225,5 +225,99 @@
   "dailyGoalTitle": "Daily Goal",
   "dailyGoalTasks": "Tasks",
   "dailyGoalProgress": "You marked 3/5 tasks\nare done 🎉",
-  "dailyGoalAllTask": "All Task"
+  "dailyGoalAllTask": "All Task",
+
+  "calendarNewEvent": "New event",
+  "calendarEditEvent": "Edit event",
+  "calendarFieldTitle": "Title",
+  "calendarFieldLocation": "Location",
+  "calendarFieldDate": "Date",
+  "calendarFieldStart": "Start",
+  "calendarFieldDuration": "Duration",
+  "calendarFieldColor": "Color",
+  "calendarTitleRequired": "Required",
+  "calendarDurationMinutes": "{minutes}m",
+  "@calendarDurationMinutes": {
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+
+  "calendarViewDots": "Timeline",
+  "calendarViewHours": "Date",
+  "calendarNoMoreTasks": "No more tasks today",
+
+  "taskDetailStartDate": "Start date",
+  "taskDetailDueDate": "Due date",
+  "taskDetailDescription": "Description",
+  "taskDetailTeamMember": "Team Member",
+  "taskDetailAttachments": "Attachments",
+  "taskDetailTaskDetail": "Task Detail",
+  "taskDetailPriorityHigh": "High priority",
+  "taskDetailPriorityMedium": "Medium priority",
+  "taskDetailPriorityLow": "Low priority",
+  "taskDetailAddTask": "Add task",
+  "taskDetailAddSubtask": "Add subtask",
+  "taskDetailAddMember": "Add member",
+  "taskDetailPreview": "Preview",
+  "taskDetailNewGroupHint": "New section title",
+  "taskDetailNewSubtaskHint": "New subtask",
+  "taskDetailEditDescription": "Edit description",
+  "taskDetailDescriptionHint": "Describe the task...",
+  "taskDetailAddAttachment": "Add attachment",
+  "taskDetailAttachmentNameHint": "File name",
+  "taskDetailAttachmentImage": "Image",
+  "taskDetailAttachmentDocument": "Document",
+  "taskDetailChooseIcon": "Choose an icon",
+
+  "taskDetailCommentAuthorYou": "You",
+  "taskDetailEditTitle": "Edit title",
+  "taskDetailEventNameHint": "Event name",
+  "taskDetailEditLocation": "Edit location",
+  "taskDetailLocationHint": "Location, room or link",
+  "taskDetailDurationMinutesLabel": "{count} min",
+  "@taskDetailDurationMinutesLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "taskDetailAttachImageError": "Could not attach image.",
+  "taskDetailAddLocation": "Add location",
+  "taskDetailColorLabel": "Color",
+  "taskDetailComments": "Comments",
+  "taskDetailNoComments": "No comments yet.",
+  "taskDetailOldCommentsHidden": "{count} old comments have no saved content.",
+  "@taskDetailOldCommentsHidden": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "taskDetailCommentHint": "Write a comment",
+  "taskDetailRemoveMemberTitle": "Remove team member?",
+  "taskDetailAddImage": "Add image",
+  "taskDetailChooseFromGallery": "Choose from gallery",
+  "taskDetailGallerySubtitle": "Attach an existing image",
+  "taskDetailOpenCamera": "Open camera",
+  "taskDetailCameraSubtitle": "Take a photo and attach to event",
+  "taskDetailPriorityLabel": "Priority",
+  "taskDetailEventColorLabel": "Event color",
+  "taskDetailCommentNow": "now",
+  "taskDetailCommentMinutesAgo": "{count} min",
+  "@taskDetailCommentMinutesAgo": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "taskDetailCommentHoursAgo": "{count}h",
+  "@taskDetailCommentHoursAgo": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "notificationMentionedIn": "{user} mentioned you in {mention}",
+  "@notificationMentionedIn": {
+    "placeholders": {
+      "user": { "type": "String" },
+      "mention": { "type": "String" }
+    }
+  },
+  "notificationHello": "Hello ",
+  "chatMembersCount": "{count} members",
+  "@chatMembersCount": {
+    "placeholders": { "count": { "type": "String" } }
+  },
+  "taskProgressIsCompleted": "{rating} is completed",
+  "@taskProgressIsCompleted": {
+    "placeholders": { "rating": { "type": "String" } }
+  }
 }
