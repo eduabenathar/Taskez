@@ -92,7 +92,7 @@ class _TimelineState extends State<Timeline> {
                       BottomNavigationItem(
                           itemIndex: 3,
                           notifier: bottomNavigatorTrigger,
-                          icon: FeatherIcons.search)
+                          icon: FeatherIcons.calendar)
                     ])),
           ),
         ]));

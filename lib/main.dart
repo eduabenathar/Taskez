@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import 'Controllers/locale_controller.dart';
 import 'Screens/splash_screen.dart';
+import 'Services/calendar_store.dart';
 import 'Theme/app_theme.dart';
 import 'Theme/theme_controller.dart';
 import 'l10n/app_localizations.dart';
@@ -13,6 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ThemeController.instance.load();
   await LocaleController.instance.load();
+  await CalendarStore.instance.init();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));
