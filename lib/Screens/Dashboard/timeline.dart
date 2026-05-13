@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:taskez/BottomSheets/bottom_sheets.dart';
 import 'package:taskez/Constants/constants.dart';
-import 'package:taskez/Screens/Dashboard/dashboard.dart';
 import 'package:taskez/Values/values.dart';
 import 'package:taskez/widgets/DarkBackground/darkRadialBackground.dart';
 import 'package:taskez/widgets/Dashboard/bottomNavigationItem.dart';
@@ -23,10 +23,13 @@ class _TimelineState extends State<Timeline> {
   static const double _pillHeight = 68;
   static const double _pillBottom = -16;
   static const double _pillSide = 24;
+  static const double _androidPillLift = 40;
 
   @override
   Widget build(BuildContext context) {
     final systemBottom = MediaQuery.of(context).padding.bottom;
+    final androidLift =
+        defaultTargetPlatform == TargetPlatform.android ? _androidPillLift : 0;
     final isLight = Theme.of(context).brightness == Brightness.light;
     final pillColor =
         isLight ? const Color(0xFF5B5BF0) : const Color(0xFF2E3240);
@@ -52,7 +55,7 @@ class _TimelineState extends State<Timeline> {
           Positioned(
             left: _pillSide,
             right: _pillSide,
-            bottom: _pillBottom + systemBottom,
+            bottom: _pillBottom + systemBottom + androidLift,
             child: Container(
                 height: _pillHeight,
                 decoration: BoxDecoration(
