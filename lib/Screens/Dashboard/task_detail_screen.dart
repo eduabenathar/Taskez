@@ -1,7 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:taskez/Data/data_model.dart';
+import 'package:taskez/Screens/Camera/image_viewer_screen.dart';
+import 'package:taskez/Screens/Camera/video_player_screen.dart';
 import 'package:taskez/Services/attachment_store.dart';
 import 'package:taskez/Services/calendar_store.dart';
 import 'package:taskez/l10n/app_localizations.dart';
@@ -78,7 +82,7 @@ const _kPalette = [
   "assets/memoji/9.png",
 ];
 
-enum _AttachmentSource { gallery, camera }
+enum _AttachmentSource { gallery, camera, files }
 
 class TaskDetailScreen extends StatefulWidget {
   final CalendarEventData event;
@@ -175,29 +179,42 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   }
 
   Future<void> _openComments(SubtaskGroup group) async {
-    final message = await showModalBottomSheet<String>(
+    await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: _DetailColors.of(context).surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      backgroundColor: Colors.transparent,
+      builder: (_) => _CommentsSheet(
+        groupId: group.id,
+        eventListenable: _event,
+        onSubmit: (message, attachments) => _appendComment(
+          group.id,
+          message,
+          attachments,
+        ),
       ),
-      builder: (_) => _CommentsSheet(group: group),
     );
-    if (message == null || message.isEmpty) return;
+  }
+
+  void _appendComment(
+    String groupId,
+    String message,
+    List<Attachment> attachments,
+  ) {
     final e = _event.value;
     _update(e.copyWith(
       subtaskGroups: [
         for (final g in e.subtaskGroups)
-          if (g.id == group.id)
+          if (g.id == groupId)
             g.copyWith(
               comments: [
                 ...g.comments,
                 TaskComment(
                   id: _newId(),
-                  author: AppLocalizations.of(context).taskDetailCommentAuthorYou,
+                  author:
+                      AppLocalizations.of(context).taskDetailCommentAuthorYou,
                   message: message,
                   createdAt: DateTime.now(),
+                  attachments: attachments,
                 ),
               ],
               commentsCount: g.effectiveCommentsCount + 1,
@@ -266,6 +283,27 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     if (picked == null) return;
     _update(_event.value.copyWith(
       attendeeImages: [..._event.value.attendeeImages, picked],
+    ));
+  }
+
+  Future<void> _removeAttachment(int index) async {
+    final attachments = _event.value.attachments;
+    if (index < 0 || index >= attachments.length) return;
+    final attachment = attachments[index];
+    final shouldRemove = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: _DetailColors.of(context).surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (_) => _RemoveAttachmentSheet(attachment: attachment),
+    );
+    if (shouldRemove != true) return;
+    _update(_event.value.copyWith(
+      attachments: [
+        for (var i = 0; i < attachments.length; i++)
+          if (i != index) attachments[i],
+      ],
     ));
   }
 
@@ -438,13 +476,23 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
     Attachment? result;
     try {
-      result = source == _AttachmentSource.camera
-          ? await AttachmentStore.instance.pickImageFromCamera()
-          : await AttachmentStore.instance.pickImageFromGallery();
+      switch (source) {
+        case _AttachmentSource.camera:
+          result = await AttachmentStore.instance.captureFromCamera(context);
+          break;
+        case _AttachmentSource.gallery:
+          result = await AttachmentStore.instance.pickImageFromGallery();
+          break;
+        case _AttachmentSource.files:
+          result = await AttachmentStore.instance.pickAnyFile();
+          break;
+      }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).taskDetailAttachImageError)),
+          SnackBar(
+              content: Text(
+                  AppLocalizations.of(context).taskDetailAttachImageError)),
         );
       }
     }
@@ -650,7 +698,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                 )
                               else
                                 SizedBox(
-                                  height: 70,
+                                  height: 80,
                                   child: ListView.separated(
                                     scrollDirection: Axis.horizontal,
                                     itemCount: event.attachments.length,
@@ -658,7 +706,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                         const SizedBox(width: 12),
                                     itemBuilder: (_, i) => _AttachmentCard(
                                       attachment: event.attachments[i],
-                                      previewLabel: l.taskDetailPreview,
+                                      onDelete: () => _removeAttachment(i),
                                     ),
                                   ),
                                 ),
@@ -1250,19 +1298,30 @@ class _RemovableAvatar extends StatelessWidget {
 
 class _AttachmentCard extends StatelessWidget {
   final Attachment attachment;
-  final String previewLabel;
-  const _AttachmentCard({required this.attachment, required this.previewLabel});
+  final VoidCallback onDelete;
+  const _AttachmentCard({
+    required this.attachment,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isImage = attachment.kind == AttachmentKind.image;
-    final tileColor =
-        isImage ? const Color(0xFF6FCCB7) : _DetailColors.of(context).accent;
-    final icon = isImage ? Icons.image_outlined : Icons.description_outlined;
+    final isVideo = attachment.kind == AttachmentKind.video;
+    final tileColor = isImage
+        ? const Color(0xFF6FCCB7)
+        : isVideo
+            ? const Color(0xFFE5654D)
+            : _DetailColors.of(context).accent;
+    final icon = isImage
+        ? Icons.image_outlined
+        : isVideo
+            ? Icons.videocam_outlined
+            : Icons.description_outlined;
 
-    return Container(
-      width: 220,
-      padding: const EdgeInsets.fromLTRB(10, 10, 14, 10),
+    final card = Container(
+      width: 280,
+      padding: const EdgeInsets.fromLTRB(10, 10, 6, 10),
       decoration: BoxDecoration(
         color: _DetailColors.of(context).surface,
         borderRadius: BorderRadius.circular(14),
@@ -1301,38 +1360,173 @@ class _AttachmentCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      attachment.sizeLabel,
-                      style: GoogleFonts.lato(
-                        color: _DetailColors.of(context).textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      "  •  ",
-                      style: GoogleFonts.lato(
-                        color: _DetailColors.of(context).textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      previewLabel,
-                      style: GoogleFonts.lato(
-                        color: _DetailColors.of(context).accent,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
+                Text(
+                  attachment.sizeLabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.lato(
+                    color: _DetailColors.of(context).textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
           ),
+          const SizedBox(width: 4),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _AttachmentIconButton(
+                onTap: () => _shareAttachment(context),
+                tooltip: AppLocalizations.of(context).commonShare,
+                icon: Icons.ios_share_rounded,
+                color: _DetailColors.of(context).textSecondary,
+              ),
+              _AttachmentIconButton(
+                onTap: onDelete,
+                tooltip: AppLocalizations.of(context).commonDelete,
+                icon: Icons.delete_outline_rounded,
+                color: const Color(0xFFC0392B),
+              ),
+            ],
+          ),
         ],
+      ),
+    );
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () => _openAttachment(context),
+      child: card,
+    );
+  }
+
+  void _openAttachment(BuildContext context) {
+    final path = attachment.localPath;
+    if (path == null || path.isEmpty) {
+      _showUnavailable(context);
+      return;
+    }
+    switch (attachment.kind) {
+      case AttachmentKind.image:
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ImageViewerScreen(
+              source: path,
+              title: attachment.name,
+            ),
+            fullscreenDialog: true,
+          ),
+        );
+        return;
+      case AttachmentKind.video:
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => VideoPlayerScreen(
+              source: path,
+              title: attachment.name,
+            ),
+            fullscreenDialog: true,
+          ),
+        );
+        return;
+      case AttachmentKind.doc:
+        _showUnavailable(context);
+        return;
+    }
+  }
+
+  void _showUnavailable(BuildContext context) {
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    if (messenger == null) return;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          AppLocalizations.of(context).taskDetailAttachmentPreviewUnavailable,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _shareAttachment(BuildContext context) async {
+    final path = attachment.localPath;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final l = AppLocalizations.of(context);
+    if (path == null || path.isEmpty) {
+      messenger?.showSnackBar(
+        SnackBar(content: Text(l.taskDetailAttachmentShareError)),
+      );
+      return;
+    }
+    final box = context.findRenderObject() as RenderBox?;
+    final origin = box != null && box.hasSize
+        ? box.localToGlobal(Offset.zero) & box.size
+        : null;
+    try {
+      await Share.shareXFiles(
+        [
+          XFile(
+            path,
+            name: attachment.name,
+            mimeType: _mimeTypeFor(attachment, path),
+          ),
+        ],
+        subject: attachment.name,
+        sharePositionOrigin: origin,
+      );
+    } catch (_) {
+      messenger?.showSnackBar(
+        SnackBar(content: Text(l.taskDetailAttachmentShareError)),
+      );
+    }
+  }
+
+  String _mimeTypeFor(Attachment a, String path) {
+    final ext = path.toLowerCase().split('.').last;
+    switch (a.kind) {
+      case AttachmentKind.image:
+        if (ext == 'png') return 'image/png';
+        if (ext == 'gif') return 'image/gif';
+        if (ext == 'webp') return 'image/webp';
+        if (ext == 'heic') return 'image/heic';
+        return 'image/jpeg';
+      case AttachmentKind.video:
+        if (ext == 'mov') return 'video/quicktime';
+        if (ext == 'webm') return 'video/webm';
+        return 'video/mp4';
+      case AttachmentKind.doc:
+        if (ext == 'pdf') return 'application/pdf';
+        return 'application/octet-stream';
+    }
+  }
+}
+
+class _AttachmentIconButton extends StatelessWidget {
+  final VoidCallback onTap;
+  final String tooltip;
+  final IconData icon;
+  final Color color;
+  const _AttachmentIconButton({
+    required this.onTap,
+    required this.tooltip,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 28,
+      height: 28,
+      child: IconButton(
+        onPressed: onTap,
+        tooltip: tooltip,
+        visualDensity: VisualDensity.compact,
+        padding: EdgeInsets.zero,
+        splashRadius: 18,
+        constraints: const BoxConstraints.tightFor(width: 28, height: 28),
+        icon: Icon(icon, size: 16, color: color),
       ),
     );
   }
@@ -1605,10 +1799,18 @@ class _SubtaskRow extends StatelessWidget {
   }
 }
 
-class _CommentsSheet extends StatefulWidget {
-  final SubtaskGroup group;
+enum _CommentAttachmentSource { camera, gallery, video, file }
 
-  const _CommentsSheet({required this.group});
+class _CommentsSheet extends StatefulWidget {
+  final String groupId;
+  final ValueListenable<CalendarEventData> eventListenable;
+  final void Function(String message, List<Attachment> attachments) onSubmit;
+
+  const _CommentsSheet({
+    required this.groupId,
+    required this.eventListenable,
+    required this.onSubmit,
+  });
 
   @override
   State<_CommentsSheet> createState() => _CommentsSheetState();
@@ -1616,6 +1818,8 @@ class _CommentsSheet extends StatefulWidget {
 
 class _CommentsSheetState extends State<_CommentsSheet> {
   late final TextEditingController _controller;
+  final ValueNotifier<List<Attachment>> _staged = ValueNotifier(const []);
+  bool _picking = false;
 
   @override
   void initState() {
@@ -1626,172 +1830,421 @@ class _CommentsSheetState extends State<_CommentsSheet> {
   @override
   void dispose() {
     _controller.dispose();
+    _staged.dispose();
     super.dispose();
+  }
+
+  SubtaskGroup? _groupFromEvent(CalendarEventData event) {
+    for (final g in event.subtaskGroups) {
+      if (g.id == widget.groupId) return g;
+    }
+    return null;
   }
 
   void _submit() {
     final message = _controller.text.trim();
-    if (message.isEmpty) return;
-    Navigator.of(context).pop(message);
+    if (message.isEmpty && _staged.value.isEmpty) return;
+    widget.onSubmit(message, List.unmodifiable(_staged.value));
+    _controller.clear();
+    _staged.value = const [];
+    FocusScope.of(context).unfocus();
+  }
+
+  Future<void> _pickAttachment() async {
+    if (_picking) return;
+    final source = await showModalBottomSheet<_CommentAttachmentSource>(
+      context: context,
+      backgroundColor: _DetailColors.of(context).surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (_) => const _CommentAttachmentSourceSheet(),
+    );
+    if (source == null) return;
+    _picking = true;
+    try {
+      Attachment? result;
+      switch (source) {
+        case _CommentAttachmentSource.camera:
+          result = await AttachmentStore.instance.captureFromCamera(context);
+          break;
+        case _CommentAttachmentSource.gallery:
+          result = await AttachmentStore.instance.pickImageFromGallery();
+          break;
+        case _CommentAttachmentSource.video:
+          result = await AttachmentStore.instance.pickVideoFromGallery();
+          break;
+        case _CommentAttachmentSource.file:
+          result = await AttachmentStore.instance.pickAnyFile();
+          break;
+      }
+      if (result != null && mounted) {
+        _staged.value = [..._staged.value, result];
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).taskDetailAttachImageError,
+            ),
+          ),
+        );
+      }
+    } finally {
+      _picking = false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final c = _DetailColors.of(context);
-    final comments = widget.group.comments;
-    final hiddenCount = widget.group.commentsCount > comments.length
-        ? widget.group.commentsCount - comments.length
-        : 0;
-
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          20,
-          16,
-          20,
-          20 + MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.sizeOf(context).height * 0.78,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _SheetGrabber(),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(context).taskDetailComments,
-                      style: GoogleFonts.lato(
-                        color: c.textPrimary,
-                        fontSize: 19,
-                        fontWeight: FontWeight.w800,
+    return DraggableScrollableSheet(
+      initialChildSize: 0.55,
+      minChildSize: 0.35,
+      maxChildSize: 0.9,
+      expand: false,
+      snap: true,
+      snapSizes: const [0.55, 0.9],
+      builder: (context, scrollController) {
+        return ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+          child: Container(
+            color: c.surface,
+            child: ValueListenableBuilder<CalendarEventData>(
+              valueListenable: widget.eventListenable,
+              builder: (context, event, _) {
+                final group = _groupFromEvent(event);
+                final comments = group?.comments ?? const [];
+                final hiddenCount =
+                    (group?.commentsCount ?? 0) > comments.length
+                        ? (group!.commentsCount - comments.length)
+                        : 0;
+                return Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: Column(
+                    children: [
+                      _SheetGrabber(),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 4),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                AppLocalizations.of(context).taskDetailComments,
+                                style: GoogleFonts.lato(
+                                  color: c.textPrimary,
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              '${group?.effectiveCommentsCount ?? 0}',
+                              style: GoogleFonts.lato(
+                                color: c.accent,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-                  Text(
-                    '${widget.group.effectiveCommentsCount}',
-                    style: GoogleFonts.lato(
-                      color: c.accent,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                widget.group.title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.lato(
-                  color: c.textSecondary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 14),
-              Flexible(
-                child: comments.isEmpty && hiddenCount == 0
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 28),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
                           child: Text(
-                            AppLocalizations.of(context).taskDetailNoComments,
+                            group?.title ?? '',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.lato(
                               color: c.textSecondary,
-                              fontSize: 14,
+                              fontSize: 13,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                      )
-                    : ListView(
-                        shrinkWrap: true,
-                        children: [
-                          if (hiddenCount > 0)
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 10),
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: c.accentSoft,
-                                borderRadius: BorderRadius.circular(12),
+                      ),
+                      Expanded(
+                        child: comments.isEmpty && hiddenCount == 0
+                            ? Center(
+                                child: Text(
+                                  AppLocalizations.of(context)
+                                      .taskDetailNoComments,
+                                  style: GoogleFonts.lato(
+                                    color: c.textSecondary,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              )
+                            : ListView(
+                                controller: scrollController,
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 6, 20, 6),
+                                children: [
+                                  if (hiddenCount > 0)
+                                    Container(
+                                      margin: const EdgeInsets.only(bottom: 10),
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: c.accentSoft,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        AppLocalizations.of(context)
+                                            .taskDetailOldCommentsHidden(
+                                                hiddenCount),
+                                        style: GoogleFonts.lato(
+                                          color: c.accent,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                          height: 1.35,
+                                        ),
+                                      ),
+                                    ),
+                                  for (final comment in comments)
+                                    _CommentTile(comment: comment),
+                                ],
                               ),
-                              child: Text(
-                                AppLocalizations.of(context).taskDetailOldCommentsHidden(hiddenCount),
-                                style: GoogleFonts.lato(
-                                  color: c.accent,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  height: 1.35,
+                      ),
+                      ValueListenableBuilder<List<Attachment>>(
+                        valueListenable: _staged,
+                        builder: (_, items, __) {
+                          if (items.isEmpty) return const SizedBox.shrink();
+                          return SizedBox(
+                            height: 78,
+                            child: ListView.separated(
+                              padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: items.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(width: 8),
+                              itemBuilder: (_, i) => _StagedAttachmentThumb(
+                                attachment: items[i],
+                                onRemove: () {
+                                  final next = [..._staged.value]..removeAt(i);
+                                  _staged.value = next;
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 12, 14),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Material(
+                              color: c.accentSoft,
+                              shape: const CircleBorder(),
+                              child: InkWell(
+                                onTap: _pickAttachment,
+                                customBorder: const CircleBorder(),
+                                child: SizedBox(
+                                  width: 42,
+                                  height: 42,
+                                  child: Icon(
+                                    Icons.attach_file_rounded,
+                                    color: c.accent,
+                                    size: 20,
+                                  ),
                                 ),
                               ),
                             ),
-                          for (final comment in comments)
-                            _CommentTile(comment: comment),
-                        ],
-                      ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      minLines: 1,
-                      maxLines: 4,
-                      style: GoogleFonts.lato(
-                        color: c.textPrimary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context).taskDetailCommentHint,
-                        hintStyle: GoogleFonts.lato(
-                          color: c.textSecondary,
-                          fontSize: 14,
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: TextField(
+                                controller: _controller,
+                                minLines: 1,
+                                maxLines: 4,
+                                style: GoogleFonts.lato(
+                                  color: c.textPrimary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: AppLocalizations.of(context)
+                                      .taskDetailCommentHint,
+                                  hintStyle: GoogleFonts.lato(
+                                    color: c.textSecondary,
+                                    fontSize: 14,
+                                  ),
+                                  filled: true,
+                                  fillColor: c.gradientBottom,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 12,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Material(
+                              color: c.accent,
+                              shape: const CircleBorder(),
+                              child: InkWell(
+                                onTap: _submit,
+                                customBorder: const CircleBorder(),
+                                child: const SizedBox(
+                                  width: 44,
+                                  height: 44,
+                                  child: Icon(
+                                    Icons.send_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        filled: true,
-                        fillColor: c.gradientBottom,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 12,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
-                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(width: 10),
-                  Material(
-                    color: c.accent,
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      onTap: _submit,
-                      customBorder: const CircleBorder(),
-                      child: const SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: Icon(
-                          Icons.send_rounded,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                );
+              },
+            ),
           ),
-        ),
+        );
+      },
+    );
+  }
+}
+
+class _StagedAttachmentThumb extends StatelessWidget {
+  final Attachment attachment;
+  final VoidCallback onRemove;
+
+  const _StagedAttachmentThumb({
+    required this.attachment,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = _DetailColors.of(context);
+    final isImage = attachment.kind == AttachmentKind.image;
+    final isVideo = attachment.kind == AttachmentKind.video;
+    final tileColor = isImage
+        ? const Color(0xFF6FCCB7)
+        : isVideo
+            ? const Color(0xFFE5654D)
+            : c.accent;
+    final icon = isImage
+        ? Icons.image_outlined
+        : isVideo
+            ? Icons.videocam_outlined
+            : Icons.description_outlined;
+    return SizedBox(
+      width: 64,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: tileColor,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: c.border),
+            ),
+            child: AttachmentPreview(
+              attachment: attachment,
+              fallbackColor: tileColor,
+              fallbackIcon: icon,
+            ),
+          ),
+          Positioned(
+            top: -6,
+            right: -6,
+            child: GestureDetector(
+              onTap: onRemove,
+              child: Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: Colors.black87,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white24),
+                ),
+                child: const Icon(
+                  Icons.close_rounded,
+                  color: Colors.white,
+                  size: 14,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommentAttachmentSourceSheet extends StatelessWidget {
+  const _CommentAttachmentSourceSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SheetGrabber(),
+          Text(
+            l.taskDetailAddMedia,
+            style: GoogleFonts.lato(
+              color: _DetailColors.of(context).textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 14),
+          _SourceTile(
+            icon: Icons.photo_camera_outlined,
+            title: l.taskDetailOpenCamera,
+            subtitle: l.taskDetailCameraSubtitle,
+            onTap: () =>
+                Navigator.of(context).pop(_CommentAttachmentSource.camera),
+          ),
+          const SizedBox(height: 10),
+          _SourceTile(
+            icon: Icons.photo_library_outlined,
+            title: l.taskDetailChooseFromGallery,
+            subtitle: l.taskDetailGallerySubtitle,
+            onTap: () =>
+                Navigator.of(context).pop(_CommentAttachmentSource.gallery),
+          ),
+          const SizedBox(height: 10),
+          _SourceTile(
+            icon: Icons.video_library_outlined,
+            title: l.commentAttachVideo,
+            subtitle: l.commentAttachVideoSubtitle,
+            onTap: () =>
+                Navigator.of(context).pop(_CommentAttachmentSource.video),
+          ),
+          const SizedBox(height: 10),
+          _SourceTile(
+            icon: Icons.insert_drive_file_outlined,
+            title: l.commentAttachFile,
+            subtitle: l.commentAttachFileSubtitle,
+            onTap: () =>
+                Navigator.of(context).pop(_CommentAttachmentSource.file),
+          ),
+        ],
       ),
     );
   }
@@ -1829,7 +2282,8 @@ class _CommentTile extends StatelessWidget {
                 ),
               ),
               Text(
-                _formatCommentTime(comment.createdAt, AppLocalizations.of(context)),
+                _formatCommentTime(
+                    comment.createdAt, AppLocalizations.of(context)),
                 style: GoogleFonts.lato(
                   color: c.textSecondary,
                   fontSize: 11,
@@ -1838,16 +2292,75 @@ class _CommentTile extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 6),
-          Text(
-            comment.message,
-            style: GoogleFonts.lato(
-              color: c.textSecondary,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              height: 1.38,
+          if (comment.message.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              comment.message,
+              style: GoogleFonts.lato(
+                color: c.textSecondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                height: 1.38,
+              ),
             ),
-          ),
+          ],
+          if (comment.attachments.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 64,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.zero,
+                itemCount: comment.attachments.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (_, i) {
+                  final a = comment.attachments[i];
+                  final isImage = a.kind == AttachmentKind.image;
+                  final isVideo = a.kind == AttachmentKind.video;
+                  final tileColor = isImage
+                      ? const Color(0xFF6FCCB7)
+                      : isVideo
+                          ? const Color(0xFFE5654D)
+                          : c.accent;
+                  final icon = isImage
+                      ? Icons.image_outlined
+                      : isVideo
+                          ? Icons.videocam_outlined
+                          : Icons.description_outlined;
+                  final thumb = Container(
+                    width: 64,
+                    height: 64,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      color: tileColor,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: c.border),
+                    ),
+                    child: AttachmentPreview(
+                      attachment: a,
+                      fallbackColor: tileColor,
+                      fallbackIcon: icon,
+                    ),
+                  );
+                  if (!isVideo || a.localPath == null) return thumb;
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => VideoPlayerScreen(
+                            source: a.localPath!,
+                            title: a.name,
+                          ),
+                          fullscreenDialog: true,
+                        ),
+                      );
+                    },
+                    child: thumb,
+                  );
+                },
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -2010,6 +2523,134 @@ class _RemoveMemberSheet extends StatelessWidget {
   }
 }
 
+class _RemoveAttachmentSheet extends StatelessWidget {
+  final Attachment attachment;
+
+  const _RemoveAttachmentSheet({required this.attachment});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final isImage = attachment.kind == AttachmentKind.image;
+    final isVideo = attachment.kind == AttachmentKind.video;
+    final tileColor = isImage
+        ? const Color(0xFF6FCCB7)
+        : isVideo
+            ? const Color(0xFFE5654D)
+            : _DetailColors.of(context).accent;
+    final icon = isImage
+        ? Icons.image_outlined
+        : isVideo
+            ? Icons.videocam_outlined
+            : Icons.description_outlined;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        20,
+        16,
+        20,
+        20 + MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SheetGrabber(),
+          Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: tileColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: AttachmentPreview(
+                  attachment: attachment,
+                  fallbackColor: tileColor,
+                  fallbackIcon: icon,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l.taskDetailRemoveAttachmentTitle,
+                      style: GoogleFonts.lato(
+                        color: _DetailColors.of(context).textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      attachment.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.lato(
+                        color: _DetailColors.of(context).textSecondary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    side: BorderSide(color: _DetailColors.of(context).border),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Text(
+                    l.commonCancel,
+                    style: GoogleFonts.lato(
+                      color: _DetailColors.of(context).textSecondary,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFFC0392B),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Text(
+                    l.commonDelete,
+                    style: GoogleFonts.lato(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _IconPickerSheet extends StatelessWidget {
   final TaskIcon current;
   const _IconPickerSheet({required this.current});
@@ -2086,7 +2727,7 @@ class _AttachmentSourceSheet extends StatelessWidget {
         children: [
           _SheetGrabber(),
           Text(
-            AppLocalizations.of(context).taskDetailAddImage,
+            AppLocalizations.of(context).taskDetailAddMedia,
             style: GoogleFonts.lato(
               color: _DetailColors.of(context).textPrimary,
               fontSize: 18,
@@ -2106,6 +2747,13 @@ class _AttachmentSourceSheet extends StatelessWidget {
             title: AppLocalizations.of(context).taskDetailOpenCamera,
             subtitle: AppLocalizations.of(context).taskDetailCameraSubtitle,
             onTap: () => Navigator.of(context).pop(_AttachmentSource.camera),
+          ),
+          const SizedBox(height: 10),
+          _SourceTile(
+            icon: Icons.folder_outlined,
+            title: AppLocalizations.of(context).taskDetailPickFile,
+            subtitle: AppLocalizations.of(context).taskDetailPickFileSubtitle,
+            onTap: () => Navigator.of(context).pop(_AttachmentSource.files),
           ),
         ],
       ),
