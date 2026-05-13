@@ -314,7 +314,7 @@ class AppData {
 
 enum TaskPriority { high, medium, low }
 
-enum AttachmentKind { image, doc }
+enum AttachmentKind { image, doc, video }
 
 enum TaskIcon {
   briefcase,
@@ -378,12 +378,14 @@ class TaskComment {
   final String author;
   final String message;
   final DateTime createdAt;
+  final List<Attachment> attachments;
 
   const TaskComment({
     required this.id,
     required this.author,
     required this.message,
     required this.createdAt,
+    this.attachments = const [],
   });
 
   Map<String, dynamic> toJson() => {
@@ -391,6 +393,7 @@ class TaskComment {
         'author': author,
         'message': message,
         'createdAt': createdAt.millisecondsSinceEpoch,
+        'attachments': attachments.map((a) => a.toJson()).toList(),
       };
 
   factory TaskComment.fromJson(Map<String, dynamic> json) => TaskComment(
@@ -400,6 +403,9 @@ class TaskComment {
         createdAt: DateTime.fromMillisecondsSinceEpoch(
           json['createdAt'] as int,
         ),
+        attachments: ((json['attachments'] as List?) ?? const [])
+            .map((e) => Attachment.fromJson(e as Map<String, dynamic>))
+            .toList(),
       );
 }
 
