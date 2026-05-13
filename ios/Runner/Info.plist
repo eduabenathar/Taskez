@@ -27,7 +27,9 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Taskez usa sua galeria para anexar imagens aos eventos.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Taskez usa sua camera para fotografar imagens e anexa-las aos eventos.</string>
+	<string>Taskez usa sua camera para fotografar e gravar videos para anexar aos eventos.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Taskez usa o microfone para gravar audio nos videos anexados aos eventos.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
