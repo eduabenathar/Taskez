@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:taskez/Services/platform_ui_config.dart';
 import 'package:taskez/l10n/app_localizations.dart';
 
 enum CapturedMediaKind { photo, video }
@@ -617,6 +618,16 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
       await _runCountdownIfNeeded();
       final file = await c.takePicture();
       if (!mounted) return;
+      final shouldUse = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          builder: (_) => _PhotoReviewScreen(
+            imagePath: file.path,
+            onUseLabel: AppLocalizations.of(context).cameraUse,
+            onRetakeLabel: AppLocalizations.of(context).cameraRetake,
+          ),
+        ),
+      );
+      if (!mounted || shouldUse != true) return;
       Navigator.of(context).pop(
         CapturedMedia(
           path: file.path,
@@ -747,6 +758,10 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
     CameraController c,
     AppLocalizations l,
   ) {
+    final platformUi = PlatformUiConfig.current;
+    final ratioBarBottom = platformUi.cameraRatioBarBottom;
+    final controlsBottomLift = platformUi.cameraControlsBottomLift;
+
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -790,26 +805,34 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
                 visible: _zoomBadgeVisible,
                 ultrawideActive: _cameraIndex == _backUltrawideIndex,
               ),
-              _ZoomChips(
-                zoom: _zoom,
-                onUltrawideAvailable: _backUltrawideIndex != null,
-                maxZoom: _maxZoom,
-                isUltrawideActive: _cameraIndex == _backUltrawideIndex,
-                onSelect: _selectLogicalZoom,
-              ),
-              _ModeSelector(mode: _mode, onChanged: _applyFlash),
-              _BottomBar(
-                mode: _mode,
-                recording: _isRecording,
-                onShutter: () {
-                  if (_mode.value == _CaptureMode.photo) {
-                    _capturePhoto();
-                  } else {
-                    _toggleVideoRecording();
-                  }
-                },
-                onGallery: _openGalleryShortcut,
-                onSwitch: _cameras.length > 1 ? _switchCamera : null,
+              Padding(
+                padding: EdgeInsets.only(bottom: controlsBottomLift),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _ZoomChips(
+                      zoom: _zoom,
+                      onUltrawideAvailable: _backUltrawideIndex != null,
+                      maxZoom: _maxZoom,
+                      isUltrawideActive: _cameraIndex == _backUltrawideIndex,
+                      onSelect: _selectLogicalZoom,
+                    ),
+                    _ModeSelector(mode: _mode, onChanged: _applyFlash),
+                    _BottomBar(
+                      mode: _mode,
+                      recording: _isRecording,
+                      onShutter: () {
+                        if (_mode.value == _CaptureMode.photo) {
+                          _capturePhoto();
+                        } else {
+                          _toggleVideoRecording();
+                        }
+                      },
+                      onGallery: _openGalleryShortcut,
+                      onSwitch: _cameras.length > 1 ? _switchCamera : null,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -840,7 +863,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
         Positioned(
           left: 0,
           right: 0,
-          bottom: -10,
+          bottom: ratioBarBottom,
           child: SafeArea(
             top: false,
             child: ValueListenableBuilder<bool>(
@@ -2104,6 +2127,175 @@ class _ErrorView extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PhotoReviewScreen extends StatefulWidget {
+  final String imagePath;
+  final String onUseLabel;
+  final String onRetakeLabel;
+
+  const _PhotoReviewScreen({
+    required this.imagePath,
+    required this.onUseLabel,
+    required this.onRetakeLabel,
+  });
+
+  @override
+  State<_PhotoReviewScreen> createState() => _PhotoReviewScreenState();
+}
+
+class _PhotoReviewScreenState extends State<_PhotoReviewScreen> {
+  late final Future<Uint8List> _bytesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _bytesFuture = XFile(widget.imagePath).readAsBytes();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          FutureBuilder<Uint8List>(
+            future: _bytesFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                );
+              }
+              if (!snapshot.hasData) {
+                return const Center(
+                  child: Icon(
+                    Icons.broken_image_outlined,
+                    color: Colors.white70,
+                    size: 52,
+                  ),
+                );
+              }
+              return InteractiveViewer(
+                minScale: 1.0,
+                maxScale: 3.0,
+                child: Center(
+                  child: Image.memory(
+                    snapshot.data!,
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
+                  ),
+                ),
+              );
+            },
+          ),
+          IgnorePointer(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0x8A000000),
+                    Color(0x00000000),
+                    Color(0xB8000000),
+                  ],
+                  stops: [0, 0.45, 1],
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).pop(false),
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.42),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.25),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.close_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.45),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.18),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              side: BorderSide(
+                                color: Colors.white.withValues(alpha: 0.45),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              textStyle: GoogleFonts.lato(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 15,
+                              ),
+                            ),
+                            child: Text(widget.onRetakeLabel),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(true),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2868FF),
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              textStyle: GoogleFonts.lato(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 15,
+                              ),
+                            ),
+                            child: Text(widget.onUseLabel),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
