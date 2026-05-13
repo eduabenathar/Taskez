@@ -30,3 +30,91 @@
   <img src="screenshots/screenshot-8.png" width="100%" title="homescreen8">
 </p>
 
+
+## iPhone Release Install (Flutter)
+
+Use this flow to install on a physical iPhone in release mode (not debug):
+
+```bash
+flutter clean
+flutter pub get
+flutter devices
+flutter run --release -d <IPHONE_DEVICE_ID>
+```
+
+Example:
+
+```bash
+flutter run --release -d 00008101-00126C8A0A38001E
+```
+
+Notes:
+- Keep the iPhone unlocked and connected by cable.
+- If signing fails, open `ios/Runner.xcworkspace` in Xcode and set your Team in `Runner > Signing & Capabilities`.
+
+## Samsung Galaxy S9 Release Install (Flutter)
+
+### 1) Prepare macOS environment (Android)
+
+Install Android Studio, then in Android Studio install:
+- Android SDK Platform (recommended latest stable)
+- Android SDK Platform-Tools
+- Android SDK Command-line Tools
+
+After install, configure Flutter with your SDK path:
+
+```bash
+flutter config --android-sdk "$HOME/Library/Android/sdk"
+flutter doctor --android-licenses
+flutter doctor -v
+```
+
+If `adb` is not in PATH, add this to your shell profile (`~/.zshrc`):
+
+```bash
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin"
+```
+
+Then reload shell:
+
+```bash
+source ~/.zshrc
+```
+
+### 2) Configure Galaxy S9
+
+On the phone:
+1. Settings > About phone > Software information
+2. Tap **Build number** 7 times (enable Developer options)
+3. Settings > Developer options:
+   - Enable **USB debugging**
+   - (Optional) Enable **Install via USB**
+4. Connect the phone by USB and accept the RSA prompt:
+   - **Allow USB debugging** -> tap **Allow**
+
+Validate connection:
+
+```bash
+adb devices
+```
+
+### 3) Install app in release mode
+
+From this project:
+
+```bash
+flutter clean
+flutter pub get
+flutter devices
+flutter run --release -d <GALAXY_DEVICE_ID>
+```
+
+### 4) Optional APK build
+
+```bash
+flutter build apk --release
+```
+
+Output:
+- `build/app/outputs/flutter-apk/app-release.apk`
