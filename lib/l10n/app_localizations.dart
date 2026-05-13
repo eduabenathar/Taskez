@@ -1517,8 +1517,248 @@ abstract class AppLocalizations {
   /// No description provided for @taskDetailCameraSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Take a photo and attach to event'**
+  /// **'Photo or video to attach to event'**
   String get taskDetailCameraSubtitle;
+
+  /// No description provided for @taskDetailAddMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Add media'**
+  String get taskDetailAddMedia;
+
+  /// No description provided for @taskDetailAttachVideoError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not attach the video.'**
+  String get taskDetailAttachVideoError;
+
+  /// No description provided for @taskDetailAttachmentVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get taskDetailAttachmentVideo;
+
+  /// No description provided for @taskDetailAttachmentPreviewUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview unavailable for this file type.'**
+  String get taskDetailAttachmentPreviewUnavailable;
+
+  /// No description provided for @taskDetailAttachmentShareError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not share this file.'**
+  String get taskDetailAttachmentShareError;
+
+  /// No description provided for @taskDetailRemoveAttachmentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete attachment?'**
+  String get taskDetailRemoveAttachmentTitle;
+
+  /// No description provided for @taskDetailPickFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a file'**
+  String get taskDetailPickFile;
+
+  /// No description provided for @taskDetailPickFileSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach a file from your device'**
+  String get taskDetailPickFileSubtitle;
+
+  /// No description provided for @cameraModePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get cameraModePhoto;
+
+  /// No description provided for @cameraModeVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get cameraModeVideo;
+
+  /// No description provided for @cameraRatio4to3.
+  ///
+  /// In en, this message translates to:
+  /// **'4:3'**
+  String get cameraRatio4to3;
+
+  /// No description provided for @cameraRatio16to9.
+  ///
+  /// In en, this message translates to:
+  /// **'16:9'**
+  String get cameraRatio16to9;
+
+  /// No description provided for @cameraRatio1to1.
+  ///
+  /// In en, this message translates to:
+  /// **'1:1'**
+  String get cameraRatio1to1;
+
+  /// No description provided for @cameraRatioFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Full'**
+  String get cameraRatioFull;
+
+  /// No description provided for @cameraFlashOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Flash off'**
+  String get cameraFlashOff;
+
+  /// No description provided for @cameraFlashAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Flash auto'**
+  String get cameraFlashAuto;
+
+  /// No description provided for @cameraFlashOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Flash on'**
+  String get cameraFlashOn;
+
+  /// No description provided for @cameraTimerOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer off'**
+  String get cameraTimerOff;
+
+  /// No description provided for @cameraTimer3s.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer 3s'**
+  String get cameraTimer3s;
+
+  /// No description provided for @cameraTimer10s.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer 10s'**
+  String get cameraTimer10s;
+
+  /// No description provided for @cameraGridOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid on'**
+  String get cameraGridOn;
+
+  /// No description provided for @cameraGridOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid off'**
+  String get cameraGridOff;
+
+  /// No description provided for @cameraGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get cameraGallery;
+
+  /// No description provided for @cameraSwitchCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch camera'**
+  String get cameraSwitchCamera;
+
+  /// No description provided for @cameraPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera permission denied. Enable it in Settings.'**
+  String get cameraPermissionDenied;
+
+  /// No description provided for @cameraInitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not start the camera.'**
+  String get cameraInitError;
+
+  /// No description provided for @cameraNoCameraAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No camera available on this device.'**
+  String get cameraNoCameraAvailable;
+
+  /// No description provided for @cameraClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get cameraClose;
+
+  /// No description provided for @cameraShutter.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture'**
+  String get cameraShutter;
+
+  /// No description provided for @cameraStartRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Start recording'**
+  String get cameraStartRecord;
+
+  /// No description provided for @cameraStopRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop recording'**
+  String get cameraStopRecord;
+
+  /// No description provided for @cameraDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get cameraDone;
+
+  /// No description provided for @cameraRetake.
+  ///
+  /// In en, this message translates to:
+  /// **'Retake'**
+  String get cameraRetake;
+
+  /// No description provided for @cameraUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Use'**
+  String get cameraUse;
+
+  /// No description provided for @videoPlayerPlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get videoPlayerPlay;
+
+  /// No description provided for @videoPlayerPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get videoPlayerPause;
+
+  /// No description provided for @commentAttachVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a video'**
+  String get commentAttachVideo;
+
+  /// No description provided for @commentAttachVideoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick an existing video'**
+  String get commentAttachVideoSubtitle;
+
+  /// No description provided for @commentAttachFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a file'**
+  String get commentAttachFile;
+
+  /// No description provided for @commentAttachFileSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Any document or attachment'**
+  String get commentAttachFileSubtitle;
 
   /// No description provided for @taskDetailPriorityLabel.
   ///

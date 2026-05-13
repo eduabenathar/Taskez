@@ -736,7 +736,131 @@ class AppLocalizationsPt extends AppLocalizations {
   String get taskDetailOpenCamera => 'Abrir câmera';
 
   @override
-  String get taskDetailCameraSubtitle => 'Fotografar e anexar ao evento';
+  String get taskDetailCameraSubtitle => 'Foto ou vídeo para anexar ao evento';
+
+  @override
+  String get taskDetailAddMedia => 'Adicionar mídia';
+
+  @override
+  String get taskDetailAttachVideoError => 'Não foi possível anexar o vídeo.';
+
+  @override
+  String get taskDetailAttachmentVideo => 'Vídeo';
+
+  @override
+  String get taskDetailAttachmentPreviewUnavailable =>
+      'Pré-visualização indisponível para este tipo de arquivo.';
+
+  @override
+  String get taskDetailAttachmentShareError =>
+      'Não foi possível compartilhar este arquivo.';
+
+  @override
+  String get taskDetailRemoveAttachmentTitle => 'Excluir anexo?';
+
+  @override
+  String get taskDetailPickFile => 'Escolher arquivo';
+
+  @override
+  String get taskDetailPickFileSubtitle => 'Anexar um arquivo do dispositivo';
+
+  @override
+  String get cameraModePhoto => 'Foto';
+
+  @override
+  String get cameraModeVideo => 'Vídeo';
+
+  @override
+  String get cameraRatio4to3 => '4:3';
+
+  @override
+  String get cameraRatio16to9 => '16:9';
+
+  @override
+  String get cameraRatio1to1 => '1:1';
+
+  @override
+  String get cameraRatioFull => 'Cheio';
+
+  @override
+  String get cameraFlashOff => 'Flash desligado';
+
+  @override
+  String get cameraFlashAuto => 'Flash auto';
+
+  @override
+  String get cameraFlashOn => 'Flash ligado';
+
+  @override
+  String get cameraTimerOff => 'Timer desligado';
+
+  @override
+  String get cameraTimer3s => 'Timer 3s';
+
+  @override
+  String get cameraTimer10s => 'Timer 10s';
+
+  @override
+  String get cameraGridOn => 'Grade ligada';
+
+  @override
+  String get cameraGridOff => 'Grade desligada';
+
+  @override
+  String get cameraGallery => 'Galeria';
+
+  @override
+  String get cameraSwitchCamera => 'Trocar câmera';
+
+  @override
+  String get cameraPermissionDenied =>
+      'Permissão da câmera negada. Habilite nas configurações.';
+
+  @override
+  String get cameraInitError => 'Não foi possível iniciar a câmera.';
+
+  @override
+  String get cameraNoCameraAvailable =>
+      'Nenhuma câmera disponível neste dispositivo.';
+
+  @override
+  String get cameraClose => 'Fechar';
+
+  @override
+  String get cameraShutter => 'Capturar';
+
+  @override
+  String get cameraStartRecord => 'Iniciar gravação';
+
+  @override
+  String get cameraStopRecord => 'Parar gravação';
+
+  @override
+  String get cameraDone => 'Concluir';
+
+  @override
+  String get cameraRetake => 'Refazer';
+
+  @override
+  String get cameraUse => 'Usar';
+
+  @override
+  String get videoPlayerPlay => 'Reproduzir';
+
+  @override
+  String get videoPlayerPause => 'Pausar';
+
+  @override
+  String get commentAttachVideo => 'Escolher vídeo';
+
+  @override
+  String get commentAttachVideoSubtitle => 'Selecionar um vídeo existente';
+
+  @override
+  String get commentAttachFile => 'Escolher arquivo';
+
+  @override
+  String get commentAttachFileSubtitle => 'Qualquer documento ou anexo';
 
   @override
   String get taskDetailPriorityLabel => 'Prioridade';

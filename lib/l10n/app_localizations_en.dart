@@ -734,7 +734,129 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taskDetailOpenCamera => 'Open camera';
 
   @override
-  String get taskDetailCameraSubtitle => 'Take a photo and attach to event';
+  String get taskDetailCameraSubtitle => 'Photo or video to attach to event';
+
+  @override
+  String get taskDetailAddMedia => 'Add media';
+
+  @override
+  String get taskDetailAttachVideoError => 'Could not attach the video.';
+
+  @override
+  String get taskDetailAttachmentVideo => 'Video';
+
+  @override
+  String get taskDetailAttachmentPreviewUnavailable =>
+      'Preview unavailable for this file type.';
+
+  @override
+  String get taskDetailAttachmentShareError => 'Could not share this file.';
+
+  @override
+  String get taskDetailRemoveAttachmentTitle => 'Delete attachment?';
+
+  @override
+  String get taskDetailPickFile => 'Pick a file';
+
+  @override
+  String get taskDetailPickFileSubtitle => 'Attach a file from your device';
+
+  @override
+  String get cameraModePhoto => 'Photo';
+
+  @override
+  String get cameraModeVideo => 'Video';
+
+  @override
+  String get cameraRatio4to3 => '4:3';
+
+  @override
+  String get cameraRatio16to9 => '16:9';
+
+  @override
+  String get cameraRatio1to1 => '1:1';
+
+  @override
+  String get cameraRatioFull => 'Full';
+
+  @override
+  String get cameraFlashOff => 'Flash off';
+
+  @override
+  String get cameraFlashAuto => 'Flash auto';
+
+  @override
+  String get cameraFlashOn => 'Flash on';
+
+  @override
+  String get cameraTimerOff => 'Timer off';
+
+  @override
+  String get cameraTimer3s => 'Timer 3s';
+
+  @override
+  String get cameraTimer10s => 'Timer 10s';
+
+  @override
+  String get cameraGridOn => 'Grid on';
+
+  @override
+  String get cameraGridOff => 'Grid off';
+
+  @override
+  String get cameraGallery => 'Gallery';
+
+  @override
+  String get cameraSwitchCamera => 'Switch camera';
+
+  @override
+  String get cameraPermissionDenied =>
+      'Camera permission denied. Enable it in Settings.';
+
+  @override
+  String get cameraInitError => 'Could not start the camera.';
+
+  @override
+  String get cameraNoCameraAvailable => 'No camera available on this device.';
+
+  @override
+  String get cameraClose => 'Close';
+
+  @override
+  String get cameraShutter => 'Capture';
+
+  @override
+  String get cameraStartRecord => 'Start recording';
+
+  @override
+  String get cameraStopRecord => 'Stop recording';
+
+  @override
+  String get cameraDone => 'Done';
+
+  @override
+  String get cameraRetake => 'Retake';
+
+  @override
+  String get cameraUse => 'Use';
+
+  @override
+  String get videoPlayerPlay => 'Play';
+
+  @override
+  String get videoPlayerPause => 'Pause';
+
+  @override
+  String get commentAttachVideo => 'Choose a video';
+
+  @override
+  String get commentAttachVideoSubtitle => 'Pick an existing video';
+
+  @override
+  String get commentAttachFile => 'Choose a file';
+
+  @override
+  String get commentAttachFileSubtitle => 'Any document or attachment';
 
   @override
   String get taskDetailPriorityLabel => 'Priority';
