@@ -19,12 +19,26 @@ class AttachmentPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final path = attachment.localPath;
     final file = path == null ? null : File(path);
-    final hasPreview = attachment.kind == AttachmentKind.image &&
-        file != null &&
-        file.existsSync();
+    final fileExists = file != null && file.existsSync();
 
-    if (hasPreview) {
+    if (attachment.kind == AttachmentKind.image && fileExists) {
       return Image.file(file, fit: BoxFit.cover);
+    }
+
+    if (attachment.kind == AttachmentKind.video) {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          ColoredBox(color: fallbackColor.withValues(alpha: 0.85)),
+          const Center(
+            child: Icon(
+              Icons.play_circle_fill_rounded,
+              color: Colors.white,
+              size: 30,
+            ),
+          ),
+        ],
+      );
     }
 
     return ColoredBox(
