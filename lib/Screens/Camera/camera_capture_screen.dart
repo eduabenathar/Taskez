@@ -72,12 +72,14 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
     _VideoResolution.hd,
   );
   final ValueNotifier<_VideoFps> _videoFps = ValueNotifier(_VideoFps.fps30);
+  final ValueNotifier<bool> _quickMenuVisible = ValueNotifier(false);
 
   double _minZoom = 1.0;
   double _maxZoom = 1.0;
-  double _baseZoom = 1.0;
   double _minExposure = -2.0;
   double _maxExposure = 2.0;
+  double _baseLogicalZoom = 1.0;
+  double? _pendingLogicalZoomOnScaleEnd;
 
   Timer? _recordTicker;
   Timer? _focusHideTimer;
@@ -140,6 +142,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
     _exposureOffset.dispose();
     _videoResolution.dispose();
     _videoFps.dispose();
+    _quickMenuVisible.dispose();
     _zoomBadgeVisible.dispose();
     super.dispose();
   }
@@ -367,19 +370,18 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
     }
   }
 
-  Future<void> _cycleVideoResolution() async {
+  Future<void> _setVideoResolution(_VideoResolution next) async {
     if (_busy || _isRecording.value) return;
-    _videoResolution.value = _videoResolution.value == _VideoResolution.hd
-        ? _VideoResolution.uhd4k
-        : _VideoResolution.hd;
+    if (_videoResolution.value == next) return;
+    _videoResolution.value = next;
     _initFuture = _initCamera(_cameras[_cameraIndex]);
     setState(() {});
   }
 
-  Future<void> _cycleVideoFps() async {
+  Future<void> _setVideoFps(_VideoFps next) async {
     if (_busy || _isRecording.value) return;
-    _videoFps.value =
-        _videoFps.value == _VideoFps.fps30 ? _VideoFps.fps60 : _VideoFps.fps30;
+    if (_videoFps.value == next) return;
+    _videoFps.value = next;
     _initFuture = _initCamera(_cameras[_cameraIndex]);
     setState(() {});
   }
@@ -450,18 +452,107 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
   }
 
   void _onScaleStart(ScaleStartDetails _) {
-    _baseZoom = _zoom.value;
+    _baseLogicalZoom = _currentLogicalZoom();
   }
 
   Future<void> _onScaleUpdate(ScaleUpdateDetails details) async {
     final c = _controller;
     if (c == null || !c.value.isInitialized) return;
-    final next = (_baseZoom * details.scale).clamp(_minZoom, _maxZoom);
-    if ((next - _zoom.value).abs() < 0.01) return;
-    _zoom.value = next;
+    final maxLogical = math.max(_maxZoom, 2.0);
+    final rawNext = (_baseLogicalZoom * details.scale).clamp(0.5, maxLogical);
+    final next = _snapLogicalZoom(rawNext);
+    await _applyLogicalZoom(next, allowLensSwitch: false);
+  }
+
+  Future<void> _onScaleEnd(ScaleEndDetails _) async {
+    final pending = _pendingLogicalZoomOnScaleEnd;
+    _pendingLogicalZoomOnScaleEnd = null;
+    if (pending == null) return;
+    await _applyLogicalZoom(pending, allowLensSwitch: true);
+  }
+
+  double _currentLogicalZoom() {
+    if (_cameraIndex == _backUltrawideIndex) return 0.5 * _zoom.value;
+    return _zoom.value;
+  }
+
+  double _snapLogicalZoom(double v) {
+    if ((v - 0.5).abs() <= 0.04) return 0.5;
+    if ((v - 1.0).abs() <= 0.05) return 1.0;
+    return v;
+  }
+
+  Future<void> _applyLogicalZoom(
+    double logicalZoom, {
+    required bool allowLensSwitch,
+  }) async {
+    final c = _controller;
+    if (c == null || !c.value.isInitialized) return;
+    final wantsUltrawide = logicalZoom < 1.0;
+    final currentIsUltrawide = _cameraIndex == _backUltrawideIndex;
+    final canSwitch = _backUltrawideIndex != null && _backWideIndex != null;
+
+    if (wantsUltrawide && canSwitch && !currentIsUltrawide) {
+      if (!allowLensSwitch) {
+        _pendingLogicalZoomOnScaleEnd = logicalZoom;
+        final physical = _minZoom;
+        if ((physical - _zoom.value).abs() >= 0.01) {
+          _zoom.value = physical;
+          _flashZoomBadge();
+          try {
+            await c.setZoomLevel(physical);
+          } on CameraException catch (_) {}
+        }
+        return;
+      }
+      _cameraIndex = _backUltrawideIndex!;
+      _initFuture = _initCamera(_cameras[_cameraIndex]).then((_) async {
+        final physical = (logicalZoom * 2.0).clamp(_minZoom, _maxZoom);
+        _zoom.value = physical;
+        try {
+          await _controller?.setZoomLevel(physical);
+        } on CameraException catch (_) {}
+      });
+      setState(() {});
+      _flashZoomBadge();
+      return;
+    }
+
+    if (!wantsUltrawide && currentIsUltrawide) {
+      if (!allowLensSwitch) {
+        _pendingLogicalZoomOnScaleEnd = logicalZoom;
+        final physical = _maxZoom;
+        if ((physical - _zoom.value).abs() >= 0.01) {
+          _zoom.value = physical;
+          _flashZoomBadge();
+          try {
+            await c.setZoomLevel(physical);
+          } on CameraException catch (_) {}
+        }
+        return;
+      }
+      _cameraIndex = _backWideIndex!;
+      _initFuture = _initCamera(_cameras[_cameraIndex]).then((_) async {
+        final physical = logicalZoom.clamp(_minZoom, _maxZoom);
+        _zoom.value = physical;
+        try {
+          await _controller?.setZoomLevel(physical);
+        } on CameraException catch (_) {}
+      });
+      setState(() {});
+      _flashZoomBadge();
+      return;
+    }
+
+    final physical = currentIsUltrawide
+        ? (logicalZoom * 2.0).clamp(_minZoom, _maxZoom)
+        : logicalZoom.clamp(_minZoom, _maxZoom);
+
+    if ((physical - _zoom.value).abs() < 0.01) return;
+    _zoom.value = physical;
     _flashZoomBadge();
     try {
-      await c.setZoomLevel(next);
+      await c.setZoomLevel(physical);
     } on CameraException catch (_) {}
   }
 
@@ -673,6 +764,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
           onExposureChanged: _onExposureChanged,
           onScaleStart: _onScaleStart,
           onScaleUpdate: _onScaleUpdate,
+          onScaleEnd: _onScaleEnd,
           ratioOf: _aspectRatioValue,
         ),
         SafeArea(
@@ -685,58 +777,14 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
                 ratioBarVisible: _ratioBarVisible,
                 recording: _isRecording,
                 recordElapsed: _recordElapsed,
+                quickMenuVisible: _quickMenuVisible,
                 videoResolution: _videoResolution,
                 videoFps: _videoFps,
-                onCycleVideoResolution: _cycleVideoResolution,
-                onCycleVideoFps: _cycleVideoFps,
+                onSetVideoResolution: _setVideoResolution,
+                onSetVideoFps: _setVideoFps,
                 onFlashChanged: _applyFlash,
               ),
               const Spacer(),
-              ValueListenableBuilder<int?>(
-                valueListenable: _countdown,
-                builder: (_, count, __) {
-                  if (count == null) return const SizedBox.shrink();
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: Text(
-                      '$count',
-                      style: GoogleFonts.lato(
-                        color: Colors.white,
-                        fontSize: 96,
-                        fontWeight: FontWeight.w900,
-                        shadows: const [
-                          Shadow(blurRadius: 24, color: Colors.black54),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-              ValueListenableBuilder<bool>(
-                valueListenable: _ratioBarVisible,
-                builder: (_, visible, __) {
-                  return ValueListenableBuilder<_CaptureMode>(
-                    valueListenable: _mode,
-                    builder: (_, mode, __) {
-                      final show = visible && mode == _CaptureMode.photo;
-                      return AnimatedSlide(
-                        duration: const Duration(milliseconds: 240),
-                        curve: Curves.easeOutCubic,
-                        offset: show ? Offset.zero : const Offset(0, 0.2),
-                        child: AnimatedOpacity(
-                          duration: const Duration(milliseconds: 220),
-                          curve: Curves.easeOutCubic,
-                          opacity: show ? 1.0 : 0.0,
-                          child: IgnorePointer(
-                            ignoring: !show,
-                            child: _RatioSelector(ratio: _ratio),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
               _ZoomBadge(
                 zoom: _zoom,
                 visible: _zoomBadgeVisible,
@@ -766,6 +814,62 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
             ],
           ),
         ),
+        Positioned.fill(
+          child: IgnorePointer(
+            child: Center(
+              child: ValueListenableBuilder<int?>(
+                valueListenable: _countdown,
+                builder: (_, count, __) {
+                  if (count == null) return const SizedBox.shrink();
+                  return Text(
+                    '$count',
+                    style: GoogleFonts.lato(
+                      color: Colors.white,
+                      fontSize: 96,
+                      fontWeight: FontWeight.w900,
+                      shadows: const [
+                        Shadow(blurRadius: 24, color: Colors.black54),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: -10,
+          child: SafeArea(
+            top: false,
+            child: ValueListenableBuilder<bool>(
+              valueListenable: _ratioBarVisible,
+              builder: (_, visible, __) {
+                return ValueListenableBuilder<_CaptureMode>(
+                  valueListenable: _mode,
+                  builder: (_, mode, __) {
+                    final show = visible && mode == _CaptureMode.photo;
+                    return AnimatedSlide(
+                      duration: const Duration(milliseconds: 240),
+                      curve: Curves.easeOutCubic,
+                      offset: show ? Offset.zero : const Offset(0, 0.2),
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 220),
+                        curve: Curves.easeOutCubic,
+                        opacity: show ? 1.0 : 0.0,
+                        child: IgnorePointer(
+                          ignoring: !show,
+                          child: Center(child: _RatioSelector(ratio: _ratio)),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -784,6 +888,7 @@ class _PreviewArea extends StatelessWidget {
   final Future<void> Function(double) onExposureChanged;
   final void Function(ScaleStartDetails) onScaleStart;
   final Future<void> Function(ScaleUpdateDetails) onScaleUpdate;
+  final Future<void> Function(ScaleEndDetails) onScaleEnd;
   final double Function(_AspectRatio) ratioOf;
 
   const _PreviewArea({
@@ -799,6 +904,7 @@ class _PreviewArea extends StatelessWidget {
     required this.onExposureChanged,
     required this.onScaleStart,
     required this.onScaleUpdate,
+    required this.onScaleEnd,
     required this.ratioOf,
   });
 
@@ -841,7 +947,7 @@ class _PreviewArea extends StatelessWidget {
                         behavior: HitTestBehavior.opaque,
                         onScaleStart: onScaleStart,
                         onScaleUpdate: (d) => onScaleUpdate(d),
-                        onScaleEnd: (_) {},
+                        onScaleEnd: (d) => onScaleEnd(d),
                         onTapUp: (d) => onTapFocus(d, Size(aw, ah)),
                         child: Stack(
                           fit: StackFit.expand,
@@ -1127,10 +1233,11 @@ class _TopBar extends StatelessWidget {
   final ValueNotifier<bool> ratioBarVisible;
   final ValueNotifier<bool> recording;
   final ValueNotifier<Duration> recordElapsed;
+  final ValueNotifier<bool> quickMenuVisible;
   final ValueNotifier<_VideoResolution> videoResolution;
   final ValueNotifier<_VideoFps> videoFps;
-  final Future<void> Function() onCycleVideoResolution;
-  final Future<void> Function() onCycleVideoFps;
+  final Future<void> Function(_VideoResolution) onSetVideoResolution;
+  final Future<void> Function(_VideoFps) onSetVideoFps;
   final Future<void> Function() onFlashChanged;
 
   const _TopBar({
@@ -1140,10 +1247,11 @@ class _TopBar extends StatelessWidget {
     required this.ratioBarVisible,
     required this.recording,
     required this.recordElapsed,
+    required this.quickMenuVisible,
     required this.videoResolution,
     required this.videoFps,
-    required this.onCycleVideoResolution,
-    required this.onCycleVideoFps,
+    required this.onSetVideoResolution,
+    required this.onSetVideoFps,
     required this.onFlashChanged,
   });
 
@@ -1151,129 +1259,189 @@ class _TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
-      child: Row(
+      child: Column(
         children: [
-          GestureDetector(
-            onTap: () => Navigator.of(context).maybePop(),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.45),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.close, color: Colors.white, size: 20),
-            ),
-          ),
-          const SizedBox(width: 10),
-          ValueListenableBuilder<bool>(
-            valueListenable: recording,
-            builder: (_, isRec, __) {
-              if (!isRec) return const SizedBox.shrink();
-              return ValueListenableBuilder<Duration>(
-                valueListenable: recordElapsed,
-                builder: (_, d, __) => Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () => Navigator.of(context).maybePop(),
+                child: Container(
+                  width: 38,
+                  height: 38,
                   decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.black.withValues(alpha: 0.45),
+                    shape: BoxShape.circle,
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        _formatDuration(d),
-                        style: GoogleFonts.lato(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: const Icon(Icons.close, color: Colors.white, size: 20),
                 ),
-              );
-            },
+              ),
+              const SizedBox(width: 10),
+              ValueListenableBuilder<bool>(
+                valueListenable: recording,
+                builder: (_, isRec, __) {
+                  if (!isRec) return const SizedBox.shrink();
+                  return ValueListenableBuilder<Duration>(
+                    valueListenable: recordElapsed,
+                    builder: (_, d, __) => Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            _formatDuration(d),
+                            style: GoogleFonts.lato(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.45),
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ValueListenableBuilder<_FlashSetting>(
+                      valueListenable: flash,
+                      builder: (_, value, __) => _PillIconButton(
+                        icon: _flashIcon(value),
+                        label: _flashLabel(value),
+                        active: value != _FlashSetting.off,
+                        onTap: () {
+                          flash.value = _FlashSetting.values[
+                              (value.index + 1) % _FlashSetting.values.length];
+                          onFlashChanged();
+                        },
+                      ),
+                    ),
+                    ValueListenableBuilder<_TimerSetting>(
+                      valueListenable: timer,
+                      builder: (_, value, __) => _PillIconButton(
+                        icon: Icons.timer_outlined,
+                        label: _timerLabel(value),
+                        active: value != _TimerSetting.off,
+                        onTap: () => timer.value = _TimerSetting.values[
+                            (value.index + 1) % _TimerSetting.values.length],
+                      ),
+                    ),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: quickMenuVisible,
+                      builder: (_, opened, __) => _DotGridButton(
+                        active: opened,
+                        onTap: () => quickMenuVisible.value = !opened,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.45),
-              borderRadius: BorderRadius.circular(22),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ValueListenableBuilder<_FlashSetting>(
-                  valueListenable: flash,
-                  builder: (_, value, __) => _PillIconButton(
-                    icon: _flashIcon(value),
-                    label: _flashLabel(value),
-                    active: value != _FlashSetting.off,
-                    onTap: () {
-                      flash.value = _FlashSetting.values[
-                          (value.index + 1) % _FlashSetting.values.length];
-                      onFlashChanged();
-                    },
-                  ),
-                ),
-                ValueListenableBuilder<_TimerSetting>(
-                  valueListenable: timer,
-                  builder: (_, value, __) => _PillIconButton(
-                    icon: Icons.timer_outlined,
-                    label: _timerLabel(value),
-                    active: value != _TimerSetting.off,
-                    onTap: () => timer.value = _TimerSetting.values[
-                        (value.index + 1) % _TimerSetting.values.length],
-                  ),
-                ),
-                ValueListenableBuilder<bool>(
-                  valueListenable: grid,
-                  builder: (_, value, __) => _PillIconButton(
-                    icon: Icons.grid_on_outlined,
-                    active: value,
-                    onTap: () => grid.value = !value,
-                  ),
-                ),
-                ValueListenableBuilder<bool>(
-                  valueListenable: ratioBarVisible,
-                  builder: (_, value, __) => _PillIconButton(
-                    icon: Icons.aspect_ratio_outlined,
-                    active: value,
-                    onTap: () => ratioBarVisible.value = !value,
-                  ),
-                ),
-                ValueListenableBuilder<_VideoResolution>(
-                  valueListenable: videoResolution,
-                  builder: (_, value, __) => _PillTextButton(
-                    label: value == _VideoResolution.hd ? 'HD' : '4K',
-                    active: true,
-                    width: 44,
-                    onTap: () => onCycleVideoResolution(),
-                  ),
-                ),
-                ValueListenableBuilder<_VideoFps>(
-                  valueListenable: videoFps,
-                  builder: (_, value, __) => _PillTextButton(
-                    label: value == _VideoFps.fps30 ? '30' : '60',
-                    suffix: 'FPS',
-                    active: true,
-                    width: 58,
-                    onTap: () => onCycleVideoFps(),
-                  ),
-                ),
-              ],
+          ValueListenableBuilder<bool>(
+            valueListenable: quickMenuVisible,
+            builder: (_, opened, __) => AnimatedSize(
+              duration: const Duration(milliseconds: 240),
+              curve: Curves.easeOutCubic,
+              alignment: Alignment.topRight,
+              child: opened
+                  ? AnimatedOpacity(
+                      duration: const Duration(milliseconds: 180),
+                      opacity: opened ? 1.0 : 0.0,
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 10),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.55),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.12),
+                            ),
+                          ),
+                          child: Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: [
+                              ValueListenableBuilder<bool>(
+                                valueListenable: grid,
+                                builder: (_, value, __) => _QuickOptionChip(
+                                  icon: Icons.grid_on_outlined,
+                                  label: 'Grade',
+                                  active: value,
+                                  onTap: () => grid.value = !value,
+                                ),
+                              ),
+                              ValueListenableBuilder<bool>(
+                                valueListenable: ratioBarVisible,
+                                builder: (_, value, __) => _QuickOptionChip(
+                                  icon: Icons.aspect_ratio_outlined,
+                                  label: 'Proporcao',
+                                  active: value,
+                                  onTap: () => ratioBarVisible.value = !value,
+                                ),
+                              ),
+                              ValueListenableBuilder<_VideoResolution>(
+                                valueListenable: videoResolution,
+                                builder: (_, value, __) => _QuickOptionChip(
+                                  icon: Icons.hd_outlined,
+                                  label: value == _VideoResolution.hd
+                                      ? 'HD'
+                                      : '4K',
+                                  active: false,
+                                  onTap: () => onSetVideoResolution(
+                                    value == _VideoResolution.hd
+                                        ? _VideoResolution.uhd4k
+                                        : _VideoResolution.hd,
+                                  ),
+                                ),
+                              ),
+                              ValueListenableBuilder<_VideoFps>(
+                                valueListenable: videoFps,
+                                builder: (_, value, __) => _QuickOptionChip(
+                                  icon: Icons.speed_outlined,
+                                  label: value == _VideoFps.fps30
+                                      ? '30 FPS'
+                                      : '60 FPS',
+                                  active: false,
+                                  onTap: () => onSetVideoFps(
+                                    value == _VideoFps.fps30
+                                        ? _VideoFps.fps60
+                                        : _VideoFps.fps30,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
           ),
         ],
@@ -1321,6 +1489,93 @@ class _TopBar extends StatelessWidget {
   }
 }
 
+class _DotGridButton extends StatelessWidget {
+  final bool active;
+  final VoidCallback onTap;
+
+  const _DotGridButton({required this.active, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final dotColor = active ? Colors.amberAccent : Colors.white;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: 38,
+        height: 38,
+        child: Center(
+          child: SizedBox(
+            width: 16,
+            height: 12,
+            child: Wrap(
+              spacing: 2,
+              runSpacing: 2,
+              children: List.generate(
+                6,
+                (_) => Container(
+                  width: 4,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: dotColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickOptionChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+
+  const _QuickOptionChip({
+    required this.icon,
+    required this.label,
+    required this.active,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = active ? Colors.amberAccent : Colors.white;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: active ? 0.55 : 0.4),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 16),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: GoogleFonts.lato(
+                color: color,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _PillIconButton extends StatelessWidget {
   final IconData icon;
   final String? label;
@@ -1363,69 +1618,6 @@ class _PillIconButton extends StatelessWidget {
               ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _PillTextButton extends StatelessWidget {
-  final String label;
-  final String? suffix;
-  final bool active;
-  final double width;
-  final VoidCallback onTap;
-
-  const _PillTextButton({
-    required this.label,
-    required this.onTap,
-    this.suffix,
-    this.active = false,
-    this.width = 44,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final color = active ? Colors.amberAccent : Colors.white;
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        width: width,
-        height: 38,
-        alignment: Alignment.center,
-        child: suffix == null
-            ? Text(
-                label,
-                style: GoogleFonts.lato(
-                  color: color,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.4,
-                ),
-              )
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    label,
-                    style: GoogleFonts.lato(
-                      color: color,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(width: 2),
-                  Text(
-                    suffix!,
-                    style: GoogleFonts.lato(
-                      color: color.withValues(alpha: 0.9),
-                      fontSize: 8.5,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                ],
-              ),
       ),
     );
   }
@@ -1778,7 +1970,7 @@ class _BottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     const ring = Color(0xFFD9C9A3);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(28, 8, 28, 28),
+      padding: const EdgeInsets.fromLTRB(28, 8, 28, 40),
       child: Row(
         children: [
           Expanded(
