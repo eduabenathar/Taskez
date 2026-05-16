@@ -97,7 +97,8 @@ class _EventDashboardCard extends StatelessWidget {
           ? event.attendeeImages.length - visibleAvatars.length
           : 0,
       commentsCount: event.subtaskGroups
-          .fold(0, (sum, group) => sum + group.commentsCount),
+          .fold(0, (sum, group) => sum + group.effectiveCommentsCount),
+      attachmentsCount: _attachmentCount(event),
       priority: event.priority,
       icon: taskIconData(event.icon),
       onTap: () => Get.to(() => TaskDetailScreen(event: event)),
@@ -110,6 +111,19 @@ class _EventDashboardCard extends StatelessWidget {
   final total = subtasks.length;
   final done = subtasks.where((task) => task.done).length;
   return (done: done, total: total);
+}
+
+int _attachmentCount(CalendarEventData event) {
+  final commentAttachments = event.subtaskGroups.fold<int>(
+    0,
+    (sum, group) =>
+        sum +
+        group.comments.fold<int>(
+          0,
+          (commentSum, comment) => commentSum + comment.attachments.length,
+        ),
+  );
+  return event.attachments.length + commentAttachments;
 }
 
 String _formatDashboardDate(DateTime date) {

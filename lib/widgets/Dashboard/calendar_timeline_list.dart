@@ -194,6 +194,7 @@ class _FeaturedEventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final stats = _taskStats(event);
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -252,6 +253,13 @@ class _FeaturedEventCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 22),
+              _TimelineMetaRow(
+                stats: stats,
+                commentsCount: _commentsCount(event),
+                attachmentsCount: _attachmentCount(event),
+                color: Colors.white,
+              ),
+              const SizedBox(height: 16),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -328,6 +336,7 @@ class _CompactRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final stats = _taskStats(event);
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -392,10 +401,88 @@ class _CompactRow extends StatelessWidget {
                   height: 1.25,
                 ),
               ),
+              const SizedBox(height: 8),
+              _TimelineMetaRow(
+                stats: stats,
+                commentsCount: _commentsCount(event),
+                attachmentsCount: _attachmentCount(event),
+                color: palette.textMuted,
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _TimelineMetaRow extends StatelessWidget {
+  final ({int done, int total}) stats;
+  final int commentsCount;
+  final int attachmentsCount;
+  final Color color;
+
+  const _TimelineMetaRow({
+    required this.stats,
+    required this.commentsCount,
+    required this.attachmentsCount,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _TimelineMetaItem(
+          icon: Icons.check_circle_outline_rounded,
+          label: '${stats.done}/${stats.total}',
+          color: color,
+        ),
+        const SizedBox(width: 12),
+        _TimelineMetaItem(
+          icon: Icons.mode_comment_outlined,
+          label: '$commentsCount',
+          color: color,
+        ),
+        const SizedBox(width: 12),
+        _TimelineMetaItem(
+          icon: Icons.attach_file_rounded,
+          label: '$attachmentsCount',
+          color: color,
+        ),
+      ],
+    );
+  }
+}
+
+class _TimelineMetaItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _TimelineMetaItem({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 15, color: color),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: GoogleFonts.lato(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -427,4 +514,31 @@ String _startLabel(int minutes) {
   final h12 = h24 % 12 == 0 ? 12 : h24 % 12;
   final mm = m.toString().padLeft(2, '0');
   return '$h12.$mm $period';
+}
+
+({int done, int total}) _taskStats(CalendarEventData event) {
+  final subtasks = event.subtaskGroups.expand((group) => group.subtasks);
+  final total = subtasks.length;
+  final done = subtasks.where((task) => task.done).length;
+  return (done: done, total: total);
+}
+
+int _commentsCount(CalendarEventData event) {
+  return event.subtaskGroups.fold(
+    0,
+    (sum, group) => sum + group.effectiveCommentsCount,
+  );
+}
+
+int _attachmentCount(CalendarEventData event) {
+  final commentAttachments = event.subtaskGroups.fold<int>(
+    0,
+    (sum, group) =>
+        sum +
+        group.comments.fold<int>(
+          0,
+          (commentSum, comment) => commentSum + comment.attachments.length,
+        ),
+  );
+  return event.attachments.length + commentAttachments;
 }

@@ -14,6 +14,7 @@ class AllTaskCard extends StatelessWidget {
   final List<String> avatarAssets;
   final int extraAvatars;
   final int commentsCount;
+  final int attachmentsCount;
   final TaskPriority priority;
   final IconData icon;
   final double? width;
@@ -29,6 +30,7 @@ class AllTaskCard extends StatelessWidget {
     required this.avatarAssets,
     this.extraAvatars = 0,
     required this.commentsCount,
+    this.attachmentsCount = 0,
     this.priority = TaskPriority.medium,
     this.icon = Icons.work_outline_rounded,
     this.width,
@@ -86,7 +88,15 @@ class AllTaskCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(icon, color: p.accent, size: 28),
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: p.accentSoft,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(icon, color: p.accent, size: 19),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -160,18 +170,28 @@ class AllTaskCard extends StatelessWidget {
                   Row(
                     children: [
                       Icon(FeatherIcons.messageCircle,
-                          size: 20, color: p.primaryIcon),
+                          size: 17, color: p.primaryIcon),
                       const SizedBox(width: 4),
                       Text(
                         '$commentsCount',
                         style: GoogleFonts.lato(
-                          fontSize: 14,
+                          fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: p.primaryIcon,
                         ),
                       ),
-                      const SizedBox(width: 14),
-                      Icon(FeatherIcons.share2, size: 20, color: p.primaryIcon),
+                      const SizedBox(width: 12),
+                      Icon(FeatherIcons.paperclip,
+                          size: 17, color: p.primaryIcon),
+                      const SizedBox(width: 4),
+                      Text(
+                        '$attachmentsCount',
+                        style: GoogleFonts.lato(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: p.primaryIcon,
+                        ),
+                      ),
                     ],
                   ),
                 ],
