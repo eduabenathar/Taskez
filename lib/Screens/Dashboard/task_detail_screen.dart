@@ -96,10 +96,14 @@ class TaskDetailScreen extends StatefulWidget {
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
   late final ValueNotifier<CalendarEventData> _event;
 
+  int _selectedSection = 0; // 0 = Equipe, 1 = Detalhes da tarefa
+
   @override
   void initState() {
     super.initState();
-    _event = ValueNotifier(widget.event);
+    _event = ValueNotifier(
+      CalendarStore.instance.eventById(widget.event.id) ?? widget.event,
+    );
   }
 
   @override
@@ -502,6 +506,168 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     ));
   }
 
+  int _photoReportTotal(CalendarEventData e) =>
+      e.photoReport.fold<int>(0, (sum, c) => sum + c.items.length);
+
+  EvidenceCategory? _categoryById(CalendarEventData e, String id) {
+    for (final c in e.photoReport) {
+      if (c.id == id) return c;
+    }
+    return null;
+  }
+
+  Future<void> _addCategory() async {
+    final l = AppLocalizations.of(context);
+    final name = await _promptText(
+      context,
+      title: l.taskDetailAddCategory,
+      hint: l.taskDetailNewCategoryHint,
+    );
+    if (name == null || name.isEmpty) return;
+    final e = _event.value;
+    _update(e.copyWith(
+      photoReport: [
+        ...e.photoReport,
+        EvidenceCategory(id: _newId(), name: name),
+      ],
+    ));
+  }
+
+  Future<void> _renameCategory(String id) async {
+    final l = AppLocalizations.of(context);
+    final category = _categoryById(_event.value, id);
+    if (category == null) return;
+    final name = await _promptText(
+      context,
+      title: l.taskDetailEditCategory,
+      hint: l.taskDetailNewCategoryHint,
+      initialValue: category.name,
+    );
+    if (name == null || name.isEmpty) return;
+    final e = _event.value;
+    _update(e.copyWith(
+      photoReport: [
+        for (final c in e.photoReport)
+          if (c.id == id) c.copyWith(name: name) else c,
+      ],
+    ));
+  }
+
+  Future<void> _removeCategory(String id) async {
+    final category = _categoryById(_event.value, id);
+    if (category == null) return;
+    final shouldRemove = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: _DetailColors.of(context).surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (_) => _RemoveCategorySheet(category: category),
+    );
+    if (shouldRemove != true) return;
+    final e = _event.value;
+    _update(e.copyWith(
+      photoReport: [
+        for (final c in e.photoReport)
+          if (c.id != id) c,
+      ],
+    ));
+  }
+
+  Future<void> _addEvidence(BuildContext context, String categoryId) async {
+    final source = await showModalBottomSheet<_AttachmentSource>(
+      context: context,
+      backgroundColor: _DetailColors.of(context).surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (_) => const _AttachmentSourceSheet(),
+    );
+    if (source == null) return;
+
+    Attachment? result;
+    try {
+      switch (source) {
+        case _AttachmentSource.camera:
+          result = await AttachmentStore.instance.captureFromCamera(context);
+          break;
+        case _AttachmentSource.gallery:
+          result = await AttachmentStore.instance.pickImageFromGallery();
+          break;
+        case _AttachmentSource.files:
+          result = await AttachmentStore.instance.pickAnyFile();
+          break;
+      }
+    } catch (_) {
+      if (mounted && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  AppLocalizations.of(context).taskDetailAttachImageError)),
+        );
+      }
+    }
+    final evidence = result;
+    if (evidence == null) return;
+    final e = _event.value;
+    _update(e.copyWith(
+      photoReport: [
+        for (final c in e.photoReport)
+          if (c.id == categoryId)
+            c.copyWith(items: [...c.items, evidence])
+          else
+            c,
+      ],
+    ));
+  }
+
+  Future<void> _removeEvidence(
+    BuildContext context,
+    String categoryId,
+    int index,
+  ) async {
+    final category = _categoryById(_event.value, categoryId);
+    if (category == null) return;
+    if (index < 0 || index >= category.items.length) return;
+    final attachment = category.items[index];
+    final shouldRemove = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: _DetailColors.of(context).surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (_) => _RemoveAttachmentSheet(attachment: attachment),
+    );
+    if (shouldRemove != true) return;
+    final e = _event.value;
+    _update(e.copyWith(
+      photoReport: [
+        for (final c in e.photoReport)
+          if (c.id == categoryId)
+            c.copyWith(items: [
+              for (var i = 0; i < c.items.length; i++)
+                if (i != index) c.items[i],
+            ])
+          else
+            c,
+      ],
+    ));
+  }
+
+  void _openCategory(String categoryId) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => _EvidenceCategoryScreen(
+          categoryId: categoryId,
+          eventListenable: _event,
+          onAddEvidence: (ctx) => _addEvidence(ctx, categoryId),
+          onRemoveEvidence: (ctx, index) =>
+              _removeEvidence(ctx, categoryId, index),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
@@ -554,23 +720,35 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                 child: _PriorityPill(priority: event.priority),
                               ),
                               const SizedBox(height: 14),
-                              InkWell(
-                                onTap: _editTitle,
-                                borderRadius: BorderRadius.circular(10),
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 3),
-                                  child: Text(
-                                    event.title,
-                                    style: GoogleFonts.lato(
-                                      color:
-                                          _DetailColors.of(context).textPrimary,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w800,
-                                      height: 1.15,
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: InkWell(
+                                      onTap: _editTitle,
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 3),
+                                        child: Text(
+                                          event.title,
+                                          style: GoogleFonts.lato(
+                                            color: _DetailColors.of(context)
+                                                .textPrimary,
+                                            fontSize: 28,
+                                            fontWeight: FontWeight.w800,
+                                            height: 1.15,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
+                                  const SizedBox(width: 12),
+                                  _ProgressRing(
+                                    progress: _computeProgress(event),
+                                    size: 54,
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 12),
                               _EventMetaGrid(
@@ -641,15 +819,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                 ),
                               ),
                               const SizedBox(height: 24),
-                              _SectionLabel(l.taskDetailTeamMember),
-                              const SizedBox(height: 10),
-                              _TeamRow(
-                                members: event.attendeeImages,
-                                progress: _computeProgress(event),
-                                onAdd: _addMember,
-                                onRemove: _removeMember,
-                              ),
-                              const SizedBox(height: 22),
                               Row(
                                 children: [
                                   _SectionLabel(l.taskDetailAttachments),
@@ -711,48 +880,131 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                   ),
                                 ),
                               const SizedBox(height: 24),
-                              Row(
-                                children: [
-                                  _SectionLabel(l.taskDetailTaskDetail),
-                                  const Spacer(),
-                                  _AddTaskButton(
-                                    label: l.taskDetailAddTask,
-                                    onTap: _addGroup,
+                              _SectionLabel(l.taskDetailSectionsTitle),
+                              const SizedBox(height: 10),
+                              _SectionTabBar(
+                                selectedIndex: _selectedSection,
+                                onSelect: (i) =>
+                                    setState(() => _selectedSection = i),
+                                tabs: [
+                                  _SectionTab(
+                                    label: l.taskDetailTeamMember,
+                                    count: event.attendeeImages.length,
+                                  ),
+                                  _SectionTab(
+                                    label: l.taskDetailTaskDetail,
+                                    count: event.subtaskGroups.length,
+                                  ),
+                                  _SectionTab(
+                                    label: l.taskDetailPhotoReport,
+                                    count: _photoReportTotal(event),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 10),
-                              ReorderableListView.builder(
-                                shrinkWrap: true,
-                                primary: false,
-                                buildDefaultDragHandles: false,
-                                physics: const NeverScrollableScrollPhysics(),
-                                padding: EdgeInsets.zero,
-                                itemCount: event.subtaskGroups.length,
-                                onReorder: _reorderGroups,
-                                itemBuilder: (context, index) {
-                                  final g = event.subtaskGroups[index];
-                                  return Padding(
-                                    key: ValueKey(g.id),
-                                    padding: const EdgeInsets.only(bottom: 12),
-                                    child: _SubtaskGroupCard(
-                                      index: index,
-                                      group: g,
-                                      onToggleSubtask: (id) =>
-                                          _toggleSubtask(g.id, id),
-                                      onToggleExpanded: () =>
-                                          _toggleGroupExpanded(g.id),
-                                      onAddSubtask: () => _addSubtask(g.id),
-                                      onReorderSubtask: (oldIndex, newIndex) =>
-                                          _reorderSubtasks(
-                                        g.id,
-                                        oldIndex,
-                                        newIndex,
-                                      ),
-                                      onOpenComments: () => _openComments(g),
+                              const SizedBox(height: 14),
+                              AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 260),
+                                switchInCurve: Curves.easeOut,
+                                switchOutCurve: Curves.easeIn,
+                                layoutBuilder:
+                                    (currentChild, previousChildren) {
+                                  return Stack(
+                                    alignment: Alignment.topCenter,
+                                    children: [
+                                      ...previousChildren,
+                                      if (currentChild != null) currentChild,
+                                    ],
+                                  );
+                                },
+                                transitionBuilder: (child, animation) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: const Offset(0, 0.04),
+                                        end: Offset.zero,
+                                      ).animate(animation),
+                                      child: child,
                                     ),
                                   );
                                 },
+                                child: _selectedSection == 0
+                                    ? _TeamRow(
+                                        key: const ValueKey('section-team'),
+                                        members: event.attendeeImages,
+                                        onAdd: _addMember,
+                                        onRemove: _removeMember,
+                                      )
+                                    : _selectedSection == 2
+                                        ? _PhotoReportSection(
+                                            key: const ValueKey(
+                                                'section-photo-report'),
+                                            categories: event.photoReport,
+                                            onAddCategory: _addCategory,
+                                            onOpenCategory: _openCategory,
+                                            onRenameCategory: _renameCategory,
+                                            onRemoveCategory: _removeCategory,
+                                          )
+                                        : Column(
+                                            key: const ValueKey(
+                                                'section-details'),
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            children: [
+                                              Align(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: _AddTaskButton(
+                                                  label: l.taskDetailAddTask,
+                                                  onTap: _addGroup,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 12),
+                                              ReorderableListView.builder(
+                                                shrinkWrap: true,
+                                                primary: false,
+                                                buildDefaultDragHandles: false,
+                                                physics:
+                                                    const NeverScrollableScrollPhysics(),
+                                                padding: EdgeInsets.zero,
+                                                itemCount:
+                                                    event.subtaskGroups.length,
+                                                onReorder: _reorderGroups,
+                                                itemBuilder: (context, index) {
+                                                  final g = event
+                                                      .subtaskGroups[index];
+                                                  return Padding(
+                                                    key: ValueKey(g.id),
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            bottom: 12),
+                                                    child: _SubtaskGroupCard(
+                                                      index: index,
+                                                      group: g,
+                                                      onToggleSubtask: (id) =>
+                                                          _toggleSubtask(
+                                                              g.id, id),
+                                                      onToggleExpanded: () =>
+                                                          _toggleGroupExpanded(
+                                                              g.id),
+                                                      onAddSubtask: () =>
+                                                          _addSubtask(g.id),
+                                                      onReorderSubtask:
+                                                          (oldIndex,
+                                                                  newIndex) =>
+                                                              _reorderSubtasks(
+                                                        g.id,
+                                                        oldIndex,
+                                                        newIndex,
+                                                      ),
+                                                      onOpenComments: () =>
+                                                          _openComments(g),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ],
+                                          ),
                               ),
                             ],
                           ),
@@ -1080,24 +1332,17 @@ class _IconActionButton extends StatelessWidget {
   }
 }
 
-class _TeamRow extends StatefulWidget {
-  final List<String> members;
+class _ProgressRing extends StatefulWidget {
   final double progress;
-  final VoidCallback onAdd;
-  final ValueChanged<String> onRemove;
+  final double size;
 
-  const _TeamRow({
-    required this.members,
-    required this.progress,
-    required this.onAdd,
-    required this.onRemove,
-  });
+  const _ProgressRing({required this.progress, this.size = 56});
 
   @override
-  State<_TeamRow> createState() => _TeamRowState();
+  State<_ProgressRing> createState() => _ProgressRingState();
 }
 
-class _TeamRowState extends State<_TeamRow>
+class _ProgressRingState extends State<_ProgressRing>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _progressAnim;
@@ -1117,7 +1362,7 @@ class _TeamRowState extends State<_TeamRow>
   }
 
   @override
-  void didUpdateWidget(_TeamRow oldWidget) {
+  void didUpdateWidget(_ProgressRing oldWidget) {
     super.didUpdateWidget(oldWidget);
     if ((oldWidget.progress - widget.progress).abs() > 0.0001) {
       final from = _progressAnim.value;
@@ -1139,9 +1384,60 @@ class _TeamRowState extends State<_TeamRow>
 
   @override
   Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _progressAnim,
+      builder: (context, _) {
+        final value = _progressAnim.value.clamp(0.0, 1.0);
+        return SizedBox(
+          width: widget.size,
+          height: widget.size,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: widget.size,
+                height: widget.size,
+                child: CircularProgressIndicator(
+                  value: value,
+                  strokeWidth: 6,
+                  backgroundColor: _DetailColors.of(context).accentSoft,
+                  valueColor:
+                      AlwaysStoppedAnimation(_DetailColors.of(context).accent),
+                ),
+              ),
+              Text(
+                "${(value * 100).round()}%",
+                style: GoogleFonts.lato(
+                  color: _DetailColors.of(context).accent,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _TeamRow extends StatelessWidget {
+  final List<String> members;
+  final VoidCallback onAdd;
+  final ValueChanged<String> onRemove;
+
+  const _TeamRow({
+    super.key,
+    required this.members,
+    required this.onAdd,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     const avatarSize = 36.0;
     const overlap = 24.0;
-    final visible = widget.members.take(4).toList();
+    final visible = members.take(4).toList();
     final stackWidth =
         visible.isEmpty ? 0.0 : avatarSize + (visible.length - 1) * overlap;
 
@@ -1160,13 +1456,13 @@ class _TeamRowState extends State<_TeamRow>
                     child: _RemovableAvatar(
                       image: visible[i],
                       size: avatarSize,
-                      onRemove: () => widget.onRemove(visible[i]),
+                      onRemove: () => onRemove(visible[i]),
                     ),
                   ),
               ],
             ),
           ),
-        if (widget.members.length > visible.length) ...[
+        if (members.length > visible.length) ...[
           const SizedBox(width: 8),
           Container(
             width: avatarSize,
@@ -1178,7 +1474,7 @@ class _TeamRowState extends State<_TeamRow>
               border: Border.all(color: Colors.white, width: 2),
             ),
             child: Text(
-              '+${widget.members.length - visible.length}',
+              '+${members.length - visible.length}',
               style: GoogleFonts.lato(
                 color: _DetailColors.of(context).accent,
                 fontSize: 12,
@@ -1192,7 +1488,7 @@ class _TeamRowState extends State<_TeamRow>
           color: _DetailColors.of(context).accent,
           shape: const CircleBorder(),
           child: InkWell(
-            onTap: widget.onAdd,
+            onTap: onAdd,
             customBorder: const CircleBorder(),
             child: const SizedBox(
               width: 36,
@@ -1201,42 +1497,194 @@ class _TeamRowState extends State<_TeamRow>
             ),
           ),
         ),
-        const Spacer(),
-        AnimatedBuilder(
-          animation: _progressAnim,
-          builder: (context, _) {
-            final value = _progressAnim.value.clamp(0.0, 1.0);
-            return SizedBox(
-              width: 56,
-              height: 56,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    width: 56,
-                    height: 56,
-                    child: CircularProgressIndicator(
-                      value: value,
-                      strokeWidth: 6,
-                      backgroundColor: _DetailColors.of(context).accentSoft,
-                      valueColor: AlwaysStoppedAnimation(
-                          _DetailColors.of(context).accent),
-                    ),
+      ],
+    );
+  }
+}
+
+class _SectionTab {
+  final String label;
+  final int count;
+
+  const _SectionTab({required this.label, required this.count});
+}
+
+class _SectionTabBar extends StatefulWidget {
+  final List<_SectionTab> tabs;
+  final int selectedIndex;
+  final ValueChanged<int> onSelect;
+
+  const _SectionTabBar({
+    required this.tabs,
+    required this.selectedIndex,
+    required this.onSelect,
+  });
+
+  @override
+  State<_SectionTabBar> createState() => _SectionTabBarState();
+}
+
+class _SectionTabBarState extends State<_SectionTabBar> {
+  final GlobalKey _stackKey = GlobalKey();
+  late List<GlobalKey> _pillKeys;
+  Rect? _highlightRect;
+
+  @override
+  void initState() {
+    super.initState();
+    _pillKeys = List.generate(widget.tabs.length, (_) => GlobalKey());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _afterLayout());
+  }
+
+  @override
+  void didUpdateWidget(_SectionTabBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.tabs.length != widget.tabs.length) {
+      _pillKeys = List.generate(widget.tabs.length, (_) => GlobalKey());
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) => _afterLayout());
+  }
+
+  void _afterLayout() {
+    _measure();
+    _ensureSelectedVisible();
+  }
+
+  void _ensureSelectedVisible() {
+    if (!mounted) return;
+    final index = widget.selectedIndex;
+    if (index < 0 || index >= _pillKeys.length) return;
+    final ctx = _pillKeys[index].currentContext;
+    if (ctx == null) return;
+    Scrollable.ensureVisible(
+      ctx,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOutCubic,
+      alignment: 0.5,
+    );
+  }
+
+  void _measure() {
+    if (!mounted) return;
+    final stackBox = _stackKey.currentContext?.findRenderObject() as RenderBox?;
+    final index = widget.selectedIndex;
+    if (index < 0 || index >= _pillKeys.length) return;
+    final pillBox =
+        _pillKeys[index].currentContext?.findRenderObject() as RenderBox?;
+    if (stackBox == null || pillBox == null || !pillBox.hasSize) return;
+    final offset = pillBox.localToGlobal(Offset.zero, ancestor: stackBox);
+    final rect = offset & pillBox.size;
+    if (_highlightRect != rect) {
+      setState(() => _highlightRect = rect);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = _DetailColors.of(context);
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Stack(
+          key: _stackKey,
+          children: [
+            if (_highlightRect != null)
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 280),
+                curve: Curves.easeOutCubic,
+                left: _highlightRect!.left,
+                top: _highlightRect!.top,
+                width: _highlightRect!.width,
+                height: _highlightRect!.height,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: c.accentSoft,
+                    borderRadius: BorderRadius.circular(24),
                   ),
-                  Text(
-                    "${(value * 100).round()}%",
-                    style: GoogleFonts.lato(
-                      color: _DetailColors.of(context).accent,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                    ),
+                ),
+              ),
+            Row(
+              children: [
+                for (var i = 0; i < widget.tabs.length; i++) ...[
+                  if (i > 0) const SizedBox(width: 10),
+                  _SectionTabPill(
+                    key: _pillKeys[i],
+                    tab: widget.tabs[i],
+                    active: i == widget.selectedIndex,
+                    onTap: () => widget.onSelect(i),
                   ),
                 ],
-              ),
-            );
-          },
+              ],
+            ),
+          ],
         ),
-      ],
+      ),
+    );
+  }
+}
+
+class _SectionTabPill extends StatelessWidget {
+  final _SectionTab tab;
+  final bool active;
+  final VoidCallback onTap;
+
+  const _SectionTabPill({
+    super.key,
+    required this.tab,
+    required this.active,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = _DetailColors.of(context);
+    final fg = active ? c.accent : c.textSecondary;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 18, right: 10, top: 9, bottom: 9),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 260),
+              style: GoogleFonts.lato(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: fg,
+              ),
+              child: Text(tab.label),
+            ),
+            const SizedBox(width: 8),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 260),
+              constraints: const BoxConstraints(minWidth: 22),
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: active ? c.surface : c.border,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 260),
+                style: GoogleFonts.lato(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: fg,
+                ),
+                child: Text('${tab.count}'),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -2518,6 +2966,422 @@ class _RemoveMemberSheet extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _PhotoReportSection extends StatelessWidget {
+  final List<EvidenceCategory> categories;
+  final VoidCallback onAddCategory;
+  final ValueChanged<String> onOpenCategory;
+  final ValueChanged<String> onRenameCategory;
+  final ValueChanged<String> onRemoveCategory;
+
+  const _PhotoReportSection({
+    super.key,
+    required this.categories,
+    required this.onAddCategory,
+    required this.onOpenCategory,
+    required this.onRenameCategory,
+    required this.onRemoveCategory,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final c = _DetailColors.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: _AddTaskButton(
+            label: l.taskDetailAddCategory,
+            onTap: onAddCategory,
+          ),
+        ),
+        const SizedBox(height: 12),
+        if (categories.isEmpty)
+          InkWell(
+            onTap: onAddCategory,
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+              decoration: BoxDecoration(
+                color: c.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: c.border),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.photo_camera_outlined, color: c.accent, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l.taskDetailPhotoReportEmpty,
+                      style: GoogleFonts.lato(
+                        color: c.accent,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          for (var i = 0; i < categories.length; i++) ...[
+            if (i > 0) const SizedBox(height: 12),
+            _EvidenceCategoryCard(
+              category: categories[i],
+              onTap: () => onOpenCategory(categories[i].id),
+              onRename: () => onRenameCategory(categories[i].id),
+              onRemove: () => onRemoveCategory(categories[i].id),
+            ),
+          ],
+      ],
+    );
+  }
+}
+
+class _EvidenceCategoryCard extends StatelessWidget {
+  final EvidenceCategory category;
+  final VoidCallback onTap;
+  final VoidCallback onRename;
+  final VoidCallback onRemove;
+
+  const _EvidenceCategoryCard({
+    required this.category,
+    required this.onTap,
+    required this.onRename,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = _DetailColors.of(context);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
+        decoration: BoxDecoration(
+          color: c.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: c.border),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: c.accentSoft,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child:
+                  Icon(Icons.photo_camera_outlined, color: c.accent, size: 22),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                category.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.lato(
+                  color: c.textPrimary,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              constraints: const BoxConstraints(minWidth: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: c.accentSoft,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '${category.items.length}',
+                style: GoogleFonts.lato(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: c.accent,
+                ),
+              ),
+            ),
+            const SizedBox(width: 6),
+            _IconActionButton(icon: Icons.edit_outlined, onTap: onRename),
+            const SizedBox(width: 2),
+            _IconActionButton(
+                icon: Icons.delete_outline_rounded, onTap: onRemove),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RemoveCategorySheet extends StatelessWidget {
+  final EvidenceCategory category;
+
+  const _RemoveCategorySheet({required this.category});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final c = _DetailColors.of(context);
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        20,
+        16,
+        20,
+        20 + MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SheetGrabber(),
+          Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: c.accentSoft,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.photo_camera_outlined,
+                    color: c.accent, size: 26),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l.taskDetailRemoveCategoryTitle,
+                      style: GoogleFonts.lato(
+                        color: c.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      category.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.lato(
+                        color: c.textSecondary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            l.taskDetailRemoveCategoryMessage,
+            style: GoogleFonts.lato(
+              color: c.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    side: BorderSide(color: c.border),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Text(
+                    l.commonCancel,
+                    style: GoogleFonts.lato(
+                      color: c.textSecondary,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFFC0392B),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Text(
+                    l.commonDelete,
+                    style: GoogleFonts.lato(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EvidenceCategoryScreen extends StatelessWidget {
+  final String categoryId;
+  final ValueListenable<CalendarEventData> eventListenable;
+  final Future<void> Function(BuildContext context) onAddEvidence;
+  final Future<void> Function(BuildContext context, int index) onRemoveEvidence;
+
+  const _EvidenceCategoryScreen({
+    required this.categoryId,
+    required this.eventListenable,
+    required this.onAddEvidence,
+    required this.onRemoveEvidence,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = _DetailColors.of(context);
+    final l = AppLocalizations.of(context);
+    return Theme(
+      data: Theme.of(context).copyWith(
+        scaffoldBackgroundColor: c.gradientBottom,
+        colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: c.accent,
+              surface: c.surface,
+            ),
+      ),
+      child: Scaffold(
+        backgroundColor: c.gradientBottom,
+        body: SizedBox.expand(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [c.gradientTop, c.gradientBottom],
+                stops: const [0.0, 0.42],
+              ),
+            ),
+            child: SafeArea(
+              child: ValueListenableBuilder<CalendarEventData>(
+                valueListenable: eventListenable,
+                builder: (context, event, _) {
+                  EvidenceCategory? category;
+                  for (final cat in event.photoReport) {
+                    if (cat.id == categoryId) {
+                      category = cat;
+                      break;
+                    }
+                  }
+                  if (category == null) {
+                    return Center(
+                      child: IconButton(
+                        onPressed: () => Navigator.of(context).maybePop(),
+                        icon: Icon(Icons.arrow_back_ios_new,
+                            color: c.textPrimary, size: 20),
+                      ),
+                    );
+                  }
+                  final items = category.items;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 8, 20, 6),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              onPressed: () => Navigator.of(context).maybePop(),
+                              icon: Icon(Icons.arrow_back_ios_new,
+                                  color: c.textPrimary, size: 20),
+                            ),
+                            Expanded(
+                              child: Text(
+                                category.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.lato(
+                                  color: c.textPrimary,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: _AddTaskButton(
+                            label: l.taskDetailAddEvidence,
+                            onTap: () => onAddEvidence(context),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child: items.isEmpty
+                            ? Center(
+                                child: Text(
+                                  l.taskDetailCategoryEmpty,
+                                  style: GoogleFonts.lato(
+                                    color: c.textSecondary,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              )
+                            : ListView.separated(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                                itemCount: items.length,
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(height: 12),
+                                itemBuilder: (_, i) => Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: _AttachmentCard(
+                                    attachment: items[i],
+                                    onDelete: () =>
+                                        onRemoveEvidence(context, i),
+                                  ),
+                                ),
+                              ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
