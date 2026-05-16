@@ -502,6 +502,40 @@ class Attachment {
       );
 }
 
+class EvidenceCategory {
+  final String id;
+  final String name;
+  final List<Attachment> items;
+
+  const EvidenceCategory({
+    required this.id,
+    required this.name,
+    this.items = const [],
+  });
+
+  EvidenceCategory copyWith({String? name, List<Attachment>? items}) =>
+      EvidenceCategory(
+        id: id,
+        name: name ?? this.name,
+        items: items ?? this.items,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'items': items.map((a) => a.toJson()).toList(),
+      };
+
+  factory EvidenceCategory.fromJson(Map<String, dynamic> json) =>
+      EvidenceCategory(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        items: ((json['items'] as List?) ?? const [])
+            .map((e) => Attachment.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
+}
+
 class CalendarEventData {
   final String id;
   final DateTime date;
@@ -519,6 +553,7 @@ class CalendarEventData {
   final double progress;
   final List<Attachment> attachments;
   final List<SubtaskGroup> subtaskGroups;
+  final List<EvidenceCategory> photoReport;
   final TaskIcon icon;
 
   const CalendarEventData({
@@ -538,6 +573,7 @@ class CalendarEventData {
     this.progress = 0,
     this.attachments = const [],
     this.subtaskGroups = const [],
+    this.photoReport = const [],
     this.icon = TaskIcon.briefcase,
   });
 
@@ -573,6 +609,7 @@ class CalendarEventData {
     double? progress,
     List<Attachment>? attachments,
     List<SubtaskGroup>? subtaskGroups,
+    List<EvidenceCategory>? photoReport,
     TaskIcon? icon,
   }) {
     return CalendarEventData(
@@ -592,6 +629,7 @@ class CalendarEventData {
       progress: progress ?? this.progress,
       attachments: attachments ?? this.attachments,
       subtaskGroups: subtaskGroups ?? this.subtaskGroups,
+      photoReport: photoReport ?? this.photoReport,
       icon: icon ?? this.icon,
     );
   }
@@ -613,6 +651,7 @@ class CalendarEventData {
         'progress': progress,
         'attachments': attachments.map((a) => a.toJson()).toList(),
         'subtaskGroups': subtaskGroups.map((g) => g.toJson()).toList(),
+        'photoReport': photoReport.map((c) => c.toJson()).toList(),
         'icon': icon.name,
       };
 
@@ -644,6 +683,9 @@ class CalendarEventData {
           .toList(),
       subtaskGroups: ((json['subtaskGroups'] as List?) ?? const [])
           .map((e) => SubtaskGroup.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      photoReport: ((json['photoReport'] as List?) ?? const [])
+          .map((e) => EvidenceCategory.fromJson(e as Map<String, dynamic>))
           .toList(),
       icon: TaskIcon.values.firstWhere(
         (i) => i.name == (json['icon'] as String?),
