@@ -630,6 +630,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get taskDetailTaskDetail => 'Detalhes da tarefa';
 
   @override
+  String get taskDetailSectionsTitle => 'Detalhes';
+
+  @override
   String get taskDetailPriorityHigh => 'Alta prioridade';
 
   @override
@@ -640,6 +643,35 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get taskDetailAddTask => 'Adicionar tarefa';
+
+  @override
+  String get taskDetailPhotoReport => 'Relatório Fotográfico';
+
+  @override
+  String get taskDetailAddCategory => 'Adicionar categoria';
+
+  @override
+  String get taskDetailNewCategoryHint => 'Nome da categoria de evidência';
+
+  @override
+  String get taskDetailEditCategory => 'Renomear categoria';
+
+  @override
+  String get taskDetailRemoveCategoryTitle => 'Remover esta categoria?';
+
+  @override
+  String get taskDetailRemoveCategoryMessage =>
+      'Todas as evidências desta categoria serão removidas.';
+
+  @override
+  String get taskDetailPhotoReportEmpty =>
+      'Nenhuma categoria de evidência ainda';
+
+  @override
+  String get taskDetailAddEvidence => 'Adicionar evidência';
+
+  @override
+  String get taskDetailCategoryEmpty => 'Nenhuma evidência capturada';
 
   @override
   String get taskDetailAddSubtask => 'Adicionar subtarefa';

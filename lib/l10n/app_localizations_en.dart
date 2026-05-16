@@ -628,6 +628,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taskDetailTaskDetail => 'Task Detail';
 
   @override
+  String get taskDetailSectionsTitle => 'Details';
+
+  @override
   String get taskDetailPriorityHigh => 'High priority';
 
   @override
@@ -638,6 +641,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get taskDetailAddTask => 'Add task';
+
+  @override
+  String get taskDetailPhotoReport => 'Photo Report';
+
+  @override
+  String get taskDetailAddCategory => 'Add category';
+
+  @override
+  String get taskDetailNewCategoryHint => 'Evidence category name';
+
+  @override
+  String get taskDetailEditCategory => 'Rename category';
+
+  @override
+  String get taskDetailRemoveCategoryTitle => 'Remove this category?';
+
+  @override
+  String get taskDetailRemoveCategoryMessage =>
+      'All evidence in this category will be removed.';
+
+  @override
+  String get taskDetailPhotoReportEmpty => 'No evidence categories yet';
+
+  @override
+  String get taskDetailAddEvidence => 'Add evidence';
+
+  @override
+  String get taskDetailCategoryEmpty => 'No evidence captured';
 
   @override
   String get taskDetailAddSubtask => 'Add subtask';

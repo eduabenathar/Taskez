@@ -1310,6 +1310,12 @@ abstract class AppLocalizations {
   /// **'Task Detail'**
   String get taskDetailTaskDetail;
 
+  /// No description provided for @taskDetailSectionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get taskDetailSectionsTitle;
+
   /// No description provided for @taskDetailPriorityHigh.
   ///
   /// In en, this message translates to:
@@ -1333,6 +1339,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add task'**
   String get taskDetailAddTask;
+
+  /// No description provided for @taskDetailPhotoReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo Report'**
+  String get taskDetailPhotoReport;
+
+  /// No description provided for @taskDetailAddCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Add category'**
+  String get taskDetailAddCategory;
+
+  /// No description provided for @taskDetailNewCategoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence category name'**
+  String get taskDetailNewCategoryHint;
+
+  /// No description provided for @taskDetailEditCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename category'**
+  String get taskDetailEditCategory;
+
+  /// No description provided for @taskDetailRemoveCategoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this category?'**
+  String get taskDetailRemoveCategoryTitle;
+
+  /// No description provided for @taskDetailRemoveCategoryMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'All evidence in this category will be removed.'**
+  String get taskDetailRemoveCategoryMessage;
+
+  /// No description provided for @taskDetailPhotoReportEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No evidence categories yet'**
+  String get taskDetailPhotoReportEmpty;
+
+  /// No description provided for @taskDetailAddEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Add evidence'**
+  String get taskDetailAddEvidence;
+
+  /// No description provided for @taskDetailCategoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No evidence captured'**
+  String get taskDetailCategoryEmpty;
 
   /// No description provided for @taskDetailAddSubtask.
   ///
