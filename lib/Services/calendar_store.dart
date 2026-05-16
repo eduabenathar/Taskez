@@ -13,8 +13,8 @@ class CalendarStore {
   CalendarStore._();
   static final CalendarStore instance = CalendarStore._();
 
-  static const String _prefsKey = 'calendar.events.v4';
-  static const String _seedKey = 'calendar.seeded.v4';
+  static const String _prefsKey = 'calendar.events.v6';
+  static const String _seedKey = 'calendar.seeded.v6';
 
   final ValueNotifier<List<CalendarEventData>> events =
       ValueNotifier<List<CalendarEventData>>(<CalendarEventData>[]);
@@ -58,16 +58,30 @@ class CalendarStore {
     return list;
   }
 
+  CalendarEventData? eventById(String id) {
+    for (final event in events.value) {
+      if (event.id == id) return event;
+    }
+    return null;
+  }
+
   Future<void> add(CalendarEventData event) async {
     events.value = [...events.value, event];
     await _persist();
   }
 
   Future<void> update(CalendarEventData event) async {
-    events.value = [
-      for (final e in events.value)
-        if (e.id == event.id) event else e,
-    ];
+    var replaced = false;
+    final next = <CalendarEventData>[];
+    for (final e in events.value) {
+      if (e.id == event.id) {
+        next.add(event);
+        replaced = true;
+      } else {
+        next.add(e);
+      }
+    }
+    events.value = replaced ? next : [...next, event];
     await _persist();
   }
 
@@ -210,6 +224,7 @@ class CalendarStore {
         startMinutes: 10 * 60,
         durationMinutes: 60,
         title: "UI/UX Research for New Feature",
+        icon: TaskIcon.research,
         location: "Online  -  Zoom meeting",
         backgroundColor: const Color(0xFFD7F4E5),
         accentColor: const Color(0xFF1E9D6F),
@@ -217,6 +232,71 @@ class CalendarStore {
           "assets/memoji/2.png",
           "assets/memoji/7.png",
           "assets/memoji/9.png",
+        ],
+        description:
+            "Map user needs, review feedback from support, and prepare the first design recommendations for the new feature experience.",
+        priority: TaskPriority.medium,
+        startDate: DateTime(today.year, today.month, today.day)
+            .subtract(const Duration(days: 4)),
+        dueDate: DateTime(today.year, today.month, today.day)
+            .add(const Duration(days: 2)),
+        attachments: const [
+          Attachment(
+            name: "research-notes.pdf",
+            sizeLabel: "4.1 MB",
+            kind: AttachmentKind.doc,
+          ),
+          Attachment(
+            name: "user-interview-clips.mp4",
+            sizeLabel: "38 MB",
+            kind: AttachmentKind.video,
+          ),
+        ],
+        subtaskGroups: [
+          SubtaskGroup(
+            id: "research-g1",
+            title: "Task 1 - Discovery",
+            commentsCount: 3,
+            comments: [
+              TaskComment(
+                id: newId(),
+                author: "Marie Bowen",
+                message:
+                    "I grouped the main pain points from yesterday's interview.",
+                createdAt: today.subtract(const Duration(hours: 5)),
+              ),
+            ],
+            subtasks: const [
+              Subtask(id: "research-s1", title: "Review user feedback inbox"),
+              Subtask(id: "research-s2", title: "Prepare interview summary"),
+              Subtask(id: "research-s3", title: "Define research assumptions"),
+            ],
+          ),
+          SubtaskGroup(
+            id: "research-g2",
+            title: "Task 2 - Feature Direction",
+            commentsCount: 1,
+            comments: [
+              TaskComment(
+                id: "research-c2",
+                author: "Benjamin Poole",
+                message: "Adding the competitor screenshots here for review.",
+                createdAt: today.subtract(const Duration(hours: 2)),
+                attachments: const [
+                  Attachment(
+                    name: "competitor-screens.png",
+                    sizeLabel: "1.8 MB",
+                    kind: AttachmentKind.image,
+                  ),
+                ],
+              ),
+            ],
+            subtasks: const [
+              Subtask(
+                  id: "research-s4", title: "Collect competitor references"),
+              Subtask(id: "research-s5", title: "Write opportunity statement"),
+            ],
+          ),
         ],
       ),
       CalendarEventData(
@@ -225,6 +305,7 @@ class CalendarStore {
         startMinutes: 11 * 60,
         durationMinutes: 60,
         title: "Wireframing & Initial UI Design Finance",
+        icon: TaskIcon.design,
         location: "WFH  -  Daily task",
         backgroundColor: const Color(0xFFFCEAC8),
         accentColor: const Color(0xFFB37A1A),
@@ -233,6 +314,51 @@ class CalendarStore {
           "assets/memoji/7.png",
           "assets/memoji/1.png",
         ],
+        description:
+            "Create the first finance wireframes, align navigation structure, and prepare the UI direction for dashboard flows.",
+        priority: TaskPriority.medium,
+        startDate: DateTime(today.year, today.month, today.day)
+            .subtract(const Duration(days: 7)),
+        dueDate: DateTime(today.year, today.month, today.day)
+            .add(const Duration(days: 3)),
+        attachments: const [
+          Attachment(
+            name: "finance-wireframes.fig",
+            sizeLabel: "9.4 MB",
+            kind: AttachmentKind.doc,
+          ),
+        ],
+        subtaskGroups: [
+          SubtaskGroup(
+            id: "wire-g1",
+            title: "Task 1 - Structure",
+            commentsCount: 2,
+            comments: [
+              TaskComment(
+                id: "wire-c1",
+                author: "Katharine Walls",
+                message: "The daily task flow looks clearer with two steps.",
+                createdAt: today.subtract(const Duration(hours: 7)),
+              ),
+            ],
+            subtasks: const [
+              Subtask(
+                  id: "wire-s1",
+                  title: "Outline dashboard information hierarchy"),
+              Subtask(id: "wire-s2", title: "Draft primary navigation states"),
+              Subtask(id: "wire-s3", title: "Create empty state wireframes"),
+            ],
+          ),
+          SubtaskGroup(
+            id: "wire-g2",
+            title: "Task 2 - UI Draft",
+            commentsCount: 2,
+            subtasks: const [
+              Subtask(id: "wire-s4", title: "Design transaction card layout"),
+              Subtask(id: "wire-s5", title: "Prepare finance summary module"),
+            ],
+          ),
+        ],
       ),
       CalendarEventData(
         id: newId(),
@@ -240,6 +366,7 @@ class CalendarStore {
         startMinutes: 12 * 60 + 30,
         durationMinutes: 60,
         title: "Discuss & Feedback Wireframing UI Design Finance",
+        icon: TaskIcon.chat,
         location: "WFH  -  Daily task",
         backgroundColor: const Color(0xFFF7DDF1),
         accentColor: const Color(0xFFB54AA0),
@@ -248,6 +375,49 @@ class CalendarStore {
           "assets/memoji/2.png",
           "assets/memoji/4.png",
         ],
+        description:
+            "Review the initial wireframes with the team, record open questions, and convert feedback into design follow-up tasks.",
+        priority: TaskPriority.low,
+        startDate: DateTime(today.year, today.month, today.day)
+            .subtract(const Duration(days: 2)),
+        dueDate: DateTime(today.year, today.month, today.day)
+            .add(const Duration(days: 4)),
+        attachments: const [
+          Attachment(
+            name: "wireframe-review.pdf",
+            sizeLabel: "6.2 MB",
+            kind: AttachmentKind.doc,
+          ),
+        ],
+        subtaskGroups: [
+          SubtaskGroup(
+            id: "feedback-g1",
+            title: "Task 1 - Design Review",
+            commentsCount: 5,
+            comments: [
+              TaskComment(
+                id: "feedback-c1",
+                author: "Marie Bowen",
+                message: "I attached the review board with the open remarks.",
+                createdAt: today.subtract(const Duration(hours: 1)),
+                attachments: const [
+                  Attachment(
+                    name: "review-board.png",
+                    sizeLabel: "2.2 MB",
+                    kind: AttachmentKind.image,
+                  ),
+                ],
+              ),
+            ],
+            subtasks: const [
+              Subtask(
+                  id: "feedback-s1",
+                  title: "Share prototype with finance team"),
+              Subtask(id: "feedback-s2", title: "Capture navigation feedback"),
+              Subtask(id: "feedback-s3", title: "Prioritize UI changes"),
+            ],
+          ),
+        ],
       ),
       CalendarEventData(
         id: newId(),
@@ -255,12 +425,50 @@ class CalendarStore {
         startMinutes: 14 * 60,
         durationMinutes: 60,
         title: "Sprint Planning",
+        icon: TaskIcon.rocket,
         location: "Online  -  Zoom meeting",
         backgroundColor: const Color(0xFFE8E0FF),
         accentColor: const Color(0xFF6752D8),
         attendeeImages: const [
           "assets/memoji/1.png",
           "assets/memoji/4.png",
+        ],
+        description:
+            "Plan the next sprint, validate capacity, and assign delivery owners for design and implementation work.",
+        priority: TaskPriority.high,
+        startDate: DateTime(tomorrow.year, tomorrow.month, tomorrow.day)
+            .subtract(const Duration(days: 1)),
+        dueDate: DateTime(tomorrow.year, tomorrow.month, tomorrow.day)
+            .add(const Duration(days: 1)),
+        attachments: const [
+          Attachment(
+            name: "sprint-backlog.xlsx",
+            sizeLabel: "1.1 MB",
+            kind: AttachmentKind.doc,
+          ),
+        ],
+        subtaskGroups: [
+          SubtaskGroup(
+            id: "sprint-g1",
+            title: "Task 1 - Planning",
+            commentsCount: 4,
+            comments: [
+              TaskComment(
+                id: "sprint-c1",
+                author: "Benjamin Poole",
+                message: "Capacity is updated with the latest holidays.",
+                createdAt: today.subtract(const Duration(hours: 8)),
+              ),
+            ],
+            subtasks: const [
+              Subtask(
+                  id: "sprint-s1",
+                  title: "Review backlog readiness",
+                  done: true),
+              Subtask(id: "sprint-s2", title: "Confirm sprint capacity"),
+              Subtask(id: "sprint-s3", title: "Assign task owners"),
+            ],
+          ),
         ],
       ),
       CalendarEventData(
@@ -269,12 +477,61 @@ class CalendarStore {
         startMinutes: 15 * 60,
         durationMinutes: 60,
         title: "Design Critique",
+        icon: TaskIcon.star,
         location: "Office  -  Studio room",
         backgroundColor: const Color(0xFFD7F4E5),
         accentColor: const Color(0xFF1E9D6F),
         attendeeImages: const [
           "assets/memoji/7.png",
           "assets/memoji/2.png",
+        ],
+        description:
+            "Evaluate the latest visual direction, decide which screens need iteration, and document action items for the team.",
+        priority: TaskPriority.low,
+        startDate: DateTime(yesterday.year, yesterday.month, yesterday.day)
+            .subtract(const Duration(days: 3)),
+        dueDate: DateTime(yesterday.year, yesterday.month, yesterday.day),
+        progress: 1,
+        attachments: const [
+          Attachment(
+            name: "critique-notes.pdf",
+            sizeLabel: "3.6 MB",
+            kind: AttachmentKind.doc,
+          ),
+          Attachment(
+            name: "visual-direction.png",
+            sizeLabel: "2.7 MB",
+            kind: AttachmentKind.image,
+          ),
+        ],
+        subtaskGroups: [
+          SubtaskGroup(
+            id: "critique-g1",
+            title: "Task 1 - Critique",
+            commentsCount: 6,
+            comments: [
+              TaskComment(
+                id: "critique-c1",
+                author: "Katharine Walls",
+                message: "The action list is ready for the next design pass.",
+                createdAt: yesterday.add(const Duration(hours: 2)),
+              ),
+            ],
+            subtasks: const [
+              Subtask(
+                  id: "critique-s1",
+                  title: "Review dashboard direction",
+                  done: true),
+              Subtask(
+                  id: "critique-s2",
+                  title: "Validate card hierarchy",
+                  done: true),
+              Subtask(
+                  id: "critique-s3",
+                  title: "Document final decisions",
+                  done: true),
+            ],
+          ),
         ],
       ),
     ];
